@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1a4aa6">
+<meta name="robots" content="noindex,nofollow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Белек">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<title>Отпуск в Белеке</title>
+<style>
+/* Layout: phone-first single column (max 640px), sticky top bar, fixed bottom tab bar; boarding-pass hero on "Сегодня". */
+:root{
+  --bg:#edf2f3; --surface:#ffffff; --surface-2:#e2eaec; --ink:#10212d; --muted:#566872; --line:#cfdbdf;
+  --accent:#1a4aa6; --accent-soft:#dfe7f7; --on-accent:#ffffff;
+  --sea:#0b7a77; --sea-soft:#d6eeec;
+  --pom:#b8362a; --pom-soft:#f7e1dd;
+  --warn:#8a5d00; --warn-soft:#f5ead0;
+  --pass-bg:#1a4aa6; --pass-ink:#f4f7ff; --pass-muted:#bccbef;
+  --shadow:0 1px 2px rgba(16,33,45,.05),0 8px 24px rgba(16,33,45,.06);
+  --f-display:'Unbounded','Arial Black',system-ui,sans-serif;
+  --f-body:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  --r:16px; --tab-h:62px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a131a; --surface:#101d27; --surface-2:#172834; --ink:#e3ecf0; --muted:#93a5af; --line:#223643;
+    --accent:#8aabff; --accent-soft:#1a2a4c; --on-accent:#0a131a;
+    --sea:#4fc8c1; --sea-soft:#0f302f;
+    --pom:#ff8a7a; --pom-soft:#3a1d19;
+    --warn:#e8b955; --warn-soft:#332912;
+    --pass-bg:#183572; --pass-ink:#eef3ff; --pass-muted:#a3b6e8;
+    --shadow:0 1px 0 rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a131a; --surface:#101d27; --surface-2:#172834; --ink:#e3ecf0; --muted:#93a5af; --line:#223643;
+  --accent:#8aabff; --accent-soft:#1a2a4c; --on-accent:#0a131a;
+  --sea:#4fc8c1; --sea-soft:#0f302f;
+  --pom:#ff8a7a; --pom-soft:#3a1d19;
+  --warn:#e8b955; --warn-soft:#332912;
+  --pass-bg:#183572; --pass-ink:#eef3ff; --pass-muted:#a3b6e8;
+  --shadow:0 1px 0 rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.app{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:0 calc(var(--tab-h) + 28px + env(safe-area-inset-bottom,0px))}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px;background:var(--bg)}
+.brand{font:700 15px/1.2 var(--f-display);letter-spacing:.01em}
+.brand span{display:block;font:500 12px/1.3 var(--f-body);color:var(--muted);letter-spacing:0}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--f-body);padding:6px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}
+.pill.ok{color:var(--sea);background:var(--sea-soft)}
+.pill.warn{color:var(--warn);background:var(--warn-soft)}
+
+.view{display:flex;flex-direction:column;gap:14px}
+.vt{font:700 22px/1.2 var(--f-display);margin:6px 0 0;text-wrap:balance}
+.eyebrow{font:600 12px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card.flush{padding:0;overflow:hidden}
+.stack{display:flex;flex-direction:column;gap:10px}
+h3{font:600 16px/1.3 var(--f-body);margin:0}
+p{margin:0}
+
+/* boarding pass */
+.pass{background:var(--pass-bg);color:var(--pass-ink);border-radius:20px;position:relative;overflow:hidden}
+.pass::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.10;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1'%3E%3Crect x='14' y='14' width='16' height='16'/%3E%3Crect x='14' y='14' width='16' height='16' transform='rotate(45 22 22)'/%3E%3C/g%3E%3C/svg%3E")}
+.pass-main{position:relative;padding:18px 20px 14px}
+.pass-head{display:flex;justify-content:space-between;gap:12px;font:500 11px/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--pass-muted)}
+.route{display:grid;grid-template-columns:auto minmax(40px,1fr) auto;align-items:center;gap:12px;margin-top:14px}
+.iata{font:700 clamp(32px,10.5vw,46px)/1 var(--f-display);letter-spacing:-.01em}
+.city{font-size:13px;color:var(--pass-muted);margin-top:6px;white-space:nowrap}
+.route .r{text-align:right}
+.route-line{position:relative;height:24px;margin-bottom:22px}
+.route-line::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5px dashed var(--pass-muted);opacity:.7}
+.route-line svg{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%) rotate(90deg);color:var(--pass-ink)}
+.tear{position:relative;height:22px;background:radial-gradient(circle at 0 50%,var(--bg) 11px,transparent 11.5px),radial-gradient(circle at 100% 50%,var(--bg) 11px,transparent 11.5px)}
+.tear::after{content:"";position:absolute;left:20px;right:20px;top:50%;border-top:2px dashed var(--pass-muted);opacity:.45}
+.pass-stub{position:relative;padding:8px 20px 20px}
+.stub-label{font:500 11px/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--pass-muted)}
+.count{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.count b{display:block;font:700 clamp(26px,8vw,36px)/1.05 var(--f-display);font-variant-numeric:tabular-nums}
+.count span{font-size:12px;color:var(--pass-muted)}
+.stub-big{font:700 clamp(24px,7.5vw,32px)/1.15 var(--f-display);margin-top:6px;text-wrap:balance}
+.stub-note{font-size:13.5px;color:var(--pass-muted);margin-top:6px}
+
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{appearance:none;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0;box-shadow:var(--shadow)}
+.tile small{font:600 11px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.tile b{font:700 17px/1.2 var(--f-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tile span{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--sea);border-radius:99px}
+.bar.over i{background:var(--pom)}
+
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px 10px;flex-wrap:wrap}
+.sched{display:grid;grid-template-columns:6.4rem minmax(0,1fr);column-gap:10px}
+.sched > div{padding:8px 0;border-top:1px solid var(--line);min-width:0}
+.sched > div:nth-child(-n+2){border-top:0;padding-top:0}
+.s-t{font:500 13.5px/1.5 var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.now-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.now-list li{display:flex;justify-content:space-between;gap:12px}
+.now-list span{color:var(--muted);font:500 13px/1.5 var(--f-mono);white-space:nowrap}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:11px;padding:10px 14px;background:var(--accent);color:var(--on-accent);font:600 15px/1.2 var(--f-body);cursor:pointer;text-decoration:none}
+.btn.soft{background:var(--accent-soft);color:var(--accent)}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:9px}
+.linkbtn{appearance:none;border:0;background:none;color:var(--accent);font:600 14px var(--f-body);cursor:pointer;padding:0}
+
+/* rows */
+.rows{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:auto 3.1rem minmax(0,1fr) auto;gap:10px;align-items:start;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item.nt{grid-template-columns:auto minmax(0,1fr) auto}
+.item .t{font:500 13.5px/22px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.item .ttl{font-weight:600;line-height:22px;overflow-wrap:anywhere}
+.item .note{color:var(--muted);font-size:13.5px;margin-top:2px;overflow-wrap:anywhere}
+.item.done .ttl{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
+.cb{width:22px;height:22px;margin:0;accent-color:var(--sea);cursor:pointer}
+.x{appearance:none;border:0;background:none;color:var(--muted);width:30px;height:30px;margin:-4px -6px 0 0;border-radius:8px;display:grid;place-items:center;cursor:pointer}
+.x:hover{background:var(--surface-2);color:var(--pom)}
+.x svg{width:16px;height:16px}
+.next .item{grid-template-columns:4.6rem minmax(0,1fr)}
+.next .when{font:500 13px/22px var(--f-mono);color:var(--muted)}
+.empty{padding:18px 16px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.more-btn{appearance:none;border:0;background:none;padding:4px 0 0;color:var(--accent);font:600 13.5px/1.4 var(--f-body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.more-btn::after{content:'';width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.more-btn[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
+.more-body{grid-column:1/-1;background:var(--surface-2);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.more-body[hidden]{display:none}
+.more-body p{margin:0}
+.more-body ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:5px}
+.more-body .mh{font:600 11.5px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.more-body .acts{display:flex;flex-wrap:wrap;gap:6px}
+.more-body .place{padding:8px 0}
+.more-body .place:first-of-type{border-top:0;padding-top:0}
+.more-body .place .acts{margin-top:4px}
+.more-body .phrase{padding:8px 0}
+.item.done .more-body{opacity:.85}
+
+/* plan */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-inline:-2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{appearance:none;flex:0 0 auto;min-width:62px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 8px 7px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;position:relative}
+.chip small{font-size:11.5px;color:var(--muted)}
+.chip b{font:700 19px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chip[aria-pressed="true"] small{color:var(--on-accent);opacity:.85}
+.chip.today::after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--pom)}
+.day-title{font:700 19px/1.25 var(--f-display);margin:0}
+.day-tag{color:var(--muted);font-size:13.5px;margin-top:2px}
+.facts{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.facts li{font-size:12.5px;padding:4px 9px;border-radius:99px;background:var(--sea-soft);color:var(--sea)}
+
+/* forms */
+.form{display:grid;gap:10px}
+.row2{display:grid;grid-template-columns:7.2rem minmax(0,1fr);gap:8px}
+.row2b{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+input,select{font:400 16px/1.3 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 12px;width:100%;min-width:0}
+input::placeholder{color:var(--muted);opacity:.8}
+label.lbl{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);min-width:0}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{appearance:none;border:0;background:none;border-radius:9px;padding:8px;font:600 14px var(--f-body);color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.grp{font:600 12px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:14px 14px 4px;border-top:1px solid var(--line)}
+.grp:first-child{border-top:0}
+.grp + .item{border-top:0}
+.progress{display:flex;flex-direction:column;gap:8px}
+.progress b{font:700 20px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+
+/* money */
+.big{font:700 clamp(28px,9vw,38px)/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.kv3{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:13.5px}
+.conv-out{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.conv-out div{background:var(--surface-2);border-radius:11px;padding:10px 12px}
+.conv-out b{display:block;font:700 18px/1.2 var(--f-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.conv-out span{font-size:12px;color:var(--muted)}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.rates{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:8px}
+.catbars{display:flex;flex-direction:column;gap:10px}
+.catbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:14px}
+.catbar .bar{grid-column:1/-1}
+.catbar .bar i{background:var(--accent)}
+.amt{text-align:right;font:500 14px/22px var(--f-mono);white-space:nowrap}
+.amt small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);margin-right:6px;vertical-align:1px}
+
+/* info */
+details.acc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);scroll-margin-top:72px}
+details.acc > summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font:600 16px/1.3 var(--f-body)}
+details.acc > summary::-webkit-details-marker{display:none}
+details.acc > summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:-4px;flex:0 0 auto;transition:transform .15s}
+details.acc[open] > summary::after{transform:rotate(-135deg);margin-top:4px}
+details.acc[open] > summary{border-bottom:1px solid var(--line)}
+.acc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.kv{display:grid;grid-template-columns:minmax(0,7.5em) minmax(0,1fr);gap:8px 12px;margin:0}
+.kv dt{color:var(--muted);font-size:13.5px}
+.kv dd{margin:0;overflow-wrap:anywhere}
+.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.plain li::marker{color:var(--muted)}
+.copyrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.copyrow .v{user-select:all}
+.place{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-top:1px solid var(--line)}
+.place:first-child{border-top:0;padding-top:0}
+.place b{font-weight:600}
+.src{font-size:12.5px;color:var(--muted)}
+.phrase{appearance:none;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 12px;cursor:pointer}
+.phrase:first-of-type{border-top:0}
+.phrase .tr{font-weight:600}
+.phrase .pron{font-size:13px;color:var(--muted);grid-column:1}
+.phrase .ru{grid-column:2;grid-row:1/3;color:var(--ink);font-size:14px}
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.nums div{background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:13px}
+.nums b{font:700 15px var(--f-display);margin-right:4px}
+.notes-grid{display:grid;gap:10px}
+
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:var(--tab-h)}
+.tab{appearance:none;border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:500 11.5px/1 var(--f-body);cursor:pointer}
+.tab svg{width:23px;height:23px}
+.tab[aria-selected="true"]{color:var(--accent)}
+.tab[aria-selected="true"] svg{stroke-width:2.2}
+
+/* overlay & toast */
+.overlay{position:fixed;inset:0;z-index:50;background:var(--pass-bg);color:var(--pass-ink);display:flex;flex-direction:column;justify-content:center;gap:18px;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));cursor:pointer}
+.overlay .o-tr{font:700 clamp(32px,10vw,64px)/1.15 var(--f-display);overflow-wrap:anywhere}
+.overlay .o-pron{font-size:20px;color:var(--pass-muted)}
+.overlay .o-ru{font-size:17px}
+.overlay .o-close{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;font-size:14px;color:var(--pass-muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tab-h) + 14px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:flex;align-items:center;gap:14px;font-size:14px;max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast button{appearance:none;border:0;background:none;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
+
+body.ro .form, body.ro .needs-write{display:none}
+@media (prefers-reduced-motion: no-preference){
+  .view:not([hidden]){animation:fade .18s ease-out}
+  @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+}
+@media (max-width:380px){
+  .tiles{grid-template-columns:1fr 1fr}
+  .tiles .tile:last-child{grid-column:1/-1}
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">Отпуск в Белеке<span>Kirman Belazur · 17–23 октября</span></div>
+    <span id="sync" class="pill"><i></i>Подключаюсь…</span>
+  </header>
+
+  <main>
+    <!-- СЕГОДНЯ -->
+    <section id="v-home" class="view" aria-label="Сегодня">
+      <div class="pass" id="pass"></div>
+      <div class="tiles" id="tiles"></div>
+
+      <div class="card flush next">
+        <div style="padding:14px 14px 4px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <h2 class="eyebrow">Дальше по плану</h2>
+          <button class="linkbtn" type="button" data-tab="plan">Весь план</button>
+        </div>
+        <div class="rows" id="next"></div>
+      </div>
+
+      <div class="card stack" id="now-card" hidden>
+        <h2 class="eyebrow">Сейчас в отеле</h2>
+        <div id="now-open"></div>
+      </div>
+
+      <div class="card stack">
+        <div class="card-head">
+          <h2 class="eyebrow">Концепция отеля</h2>
+          <span class="pill ok"><i></i>Подтверждено до конца октября</span>
+        </div>
+        <ul class="plain">
+          <li><b>Еда почти круглосуточно</b>: ночной буфет до 02:00, ночной завтрак с 02:00 до 07:00</li>
+          <li><b>Бассейн 16+ с баром в воде</b>: вода там теплее, чем в других бассейнах, и нет детей</li>
+          <li><b>Итальянский а-ля карт</b>: ваш бесплатный ужин, в отзывах его хвалят больше других</li>
+          <li><b>Пирс</b>: бар, курица и фри с 12:00, 8 видов мороженого, павильоны за 100 € в день</li>
+          <li><b>Бесплатно</b>: боулинг, бильярд, PlayStation, стрельба из лука, йога, хаммам и сауны</li>
+        </ul>
+        <p class="small muted">Отель предупредил, что многое зависит от погоды. Обычно это горки, открытые бассейны и пляжный сервис.</p>
+        <div class="btns">
+          <button class="btn soft sm" type="button" data-act="open" data-sec="concept">Что входит в концепцию</button>
+          <button class="btn line sm" type="button" data-act="open" data-sec="reviews">Выводы из отзывов</button>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <h2 class="eyebrow">Первое утро в отеле</h2>
+        <ol class="plain">
+          <li>На ресепшн попросите тихий номер: корпус 8 (H) или корпус E, не на нижних этажах, окнами на бассейн и море. Корпус 9 (I) далеко от всего, номера у лобби шумные.</li>
+          <li>Пока номер не готов, переоденьтесь в раздевалке SPA и идите на завтрак и пляж.</li>
+          <li>На стойке а-ля карт забронируйте итальянский. Бесплатный ужин полагается один, места разбирают быстро.</li>
+          <li>В Guest Relations сохраните их WhatsApp и возьмите программу анимации на неделю.</li>
+          <li>Когда заселитесь, проверьте номер: нет ли запаха, работает ли кондиционер, чистые ли матрас и бельё. Если что-то не так, сразу просите другой номер.</li>
+        </ol>
+        <p class="small muted">Это самые частые советы из отзывов гостей за 2024–2026 годы.</p>
+      </div>
+
+      <div class="card stack">
+        <h2 class="eyebrow">Погода во второй половине октября</h2>
+        <div class="kv3" style="color:var(--ink);font-size:15px">
+          <span>Днём <b class="mono">+25…27°</b></span><span>Ночью <b class="mono">+15…17°</b></span><span>Море <b class="mono">+23…24°</b></span><span>Рассвет <b class="mono">≈07:05</b></span><span>Закат <b class="mono">≈18:15</b></span>
+        </div>
+        <p class="small muted">Это климатическая норма для Белека, а не прогноз. В отзывах за октябрь 2025 года писали и про +35 °C днём, а в 2021 году выпадали штормовые дни без купания. Солнце ещё сильное, берите крем SPF 30–50.</p>
+      </div>
+    </section>
+
+    <!-- ПЛАН -->
+    <section id="v-plan" class="view" aria-label="План" hidden>
+      <h1 class="vt">План по дням</h1>
+      <div class="chips" id="day-chips"></div>
+      <div id="day-head"></div>
+      <div class="card flush"><div class="rows" id="day-list"></div></div>
+      <form id="plan-form" class="card form" autocomplete="off">
+        <h2 class="eyebrow">Добавить в этот день</h2>
+        <div class="row2">
+          <input id="pf-time" type="time" aria-label="Время">
+          <input id="pf-title" type="text" placeholder="Что делаем" aria-label="Что делаем" maxlength="120" required>
+        </div>
+        <input id="pf-note" type="text" placeholder="Заметка, необязательно" aria-label="Заметка" maxlength="240">
+        <div><button class="btn" type="submit">Добавить</button></div>
+      </form>
+    </section>
+
+    <!-- СБОРЫ -->
+    <section id="v-pack" class="view" aria-label="Сборы" hidden>
+      <h1 class="vt">Сборы и покупки</h1>
+      <div class="seg" id="pack-seg">
+        <button type="button" data-act="packlist" data-v="pack">Что взять</button>
+        <button type="button" data-act="packlist" data-v="shop">Купить в Турции</button>
+      </div>
+      <div class="card progress" id="pack-progress"></div>
+      <label class="toggle"><input type="checkbox" id="hide-done"> Скрыть отмеченное</label>
+      <div class="card flush"><div class="rows" id="pack-list"></div></div>
+      <form id="pack-form" class="card form" autocomplete="off">
+        <h2 class="eyebrow">Добавить пункт</h2>
+        <input id="kf-text" type="text" placeholder="Например, зарядка для часов" aria-label="Что добавить" maxlength="120" required>
+        <div class="row2b">
+          <select id="kf-cat" aria-label="Раздел"></select>
+          <button class="btn" type="submit">Добавить</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ДЕНЬГИ -->
+    <section id="v-money" class="view" aria-label="Деньги" hidden>
+      <h1 class="vt">Деньги</h1>
+
+      <div class="card stack">
+        <div id="budget-dyn"></div>
+        <label class="lbl needs-write">Бюджет на траты вне «всё включено», $
+          <input id="budget-in" type="text" inputmode="decimal" placeholder="Например, 600" data-bind="settings.budgetUsd">
+        </label>
+      </div>
+
+      <form id="exp-form" class="card form" autocomplete="off">
+        <h2 class="eyebrow">Записать трату</h2>
+        <div class="row2b">
+          <input id="ef-amt" type="text" inputmode="decimal" placeholder="Сумма" aria-label="Сумма" required>
+          <select id="ef-cur" aria-label="Валюта"><option value="TRY">₺ лиры</option><option value="USD">$ доллары</option><option value="EUR">€ евро</option><option value="RUB">₽ рубли</option></select>
+        </div>
+        <div class="row2b">
+          <select id="ef-cat" aria-label="Категория"></select>
+          <select id="ef-day" aria-label="День"></select>
+        </div>
+        <input id="ef-note" type="text" placeholder="На что, например «массаж для двоих»" aria-label="На что" maxlength="120">
+        <div><button class="btn" type="submit">Записать</button></div>
+      </form>
+
+      <div class="card stack">
+        <h2 class="eyebrow">Конвертер</h2>
+        <div class="row2b">
+          <input id="cv-amt" type="text" inputmode="decimal" value="1000" aria-label="Сумма для пересчёта">
+          <select id="cv-cur" aria-label="Валюта"><option value="TRY">₺ лиры</option><option value="USD">$ доллары</option><option value="EUR">€ евро</option><option value="RUB">₽ рубли</option></select>
+        </div>
+        <div class="quick">
+          <button class="btn line sm" type="button" data-act="cv" data-a="100" data-c="TRY">100 ₺</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="500" data-c="TRY">500 ₺</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="1000" data-c="TRY">1000 ₺</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="2500" data-c="TRY">2500 ₺</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="50" data-c="USD">$50</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="100" data-c="USD">$100</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="15" data-c="EUR">15 € (Аспендос)</button>
+          <button class="btn line sm" type="button" data-act="cv" data-a="100" data-c="EUR">100 € (павильон)</button>
+        </div>
+        <div class="conv-out" id="cv-out"></div>
+        <div class="rates">
+          <label class="lbl">1 $ = … ₺ (курс обменника)<input id="rt-try" type="text" inputmode="decimal" data-bind="settings.usdTry"></label>
+          <label class="lbl">1 $ = … ₽<input id="rt-rub" type="text" inputmode="decimal" data-bind="settings.usdRub"></label>
+          <label class="lbl">1 € = … $<input id="rt-eur" type="text" inputmode="decimal" data-bind="settings.eurUsd"></label>
+        </div>
+        <p class="small muted" id="rates-date"></p>
+      </div>
+
+      <div class="card stack" id="cats-card"></div>
+      <div class="card flush"><div class="rows" id="exp-list"></div></div>
+
+      <details class="acc">
+        <summary>Сколько оставлять на чай</summary>
+        <div class="acc-body">
+          <ul class="plain">
+            <li>Горничной: $1–2 в день, на подушке или с запиской. Можно оставить сразу за несколько дней в начале отдыха.</li>
+            <li>Бармену или официанту в отеле: по желанию, $1–2, если хорошо обслужили. На «всё включено» это не обязательно.</li>
+            <li>В кафе и ресторане вне отеля: 5–10%, если в счёте нет строки «servis».</li>
+            <li>Массажисту или банщику в хаммаме: 5–10% от стоимости процедуры.</li>
+            <li>Таксисту: округлите сумму вверх.</li>
+          </ul>
+          <p class="small muted">В отеле можно оставлять доллары, в городе удобнее лиры.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ИНФО -->
+    <section id="v-info" class="view" aria-label="Инфо" hidden>
+      <h1 class="vt">Шпаргалка</h1>
+
+      <details class="acc" id="concept" open>
+        <summary>Что входит в концепцию</summary>
+        <div class="acc-body">
+          <div class="stack">
+            <p><span class="pill ok"><i></i>Подтверждено отелем</span></p>
+            <p>Ultra All Inclusive в фирменной концепции Kirman Signature. Отель подтвердил, что до конца октября она не меняется, но работа части услуг зависит от погоды.</p>
+          </div>
+
+          <div class="stack">
+            <h3>Питание по часам</h3>
+            <div class="sched" id="food-sched"></div>
+            <p class="small muted">Рум-сервис круглосуточно, платно. В пляжной одежде в рестораны не пускают.</p>
+          </div>
+
+          <div class="stack">
+            <h3>Рестораны а-ля карт</h3>
+            <div>
+              <div class="place"><b>Итальянский · ваш выбор</b><span>Его нет на сайте отеля, но в отзывах 2024–2026 годов его хвалят больше других: каре ягнёнка, большие порции, красивая подача.</span></div>
+              <div class="place"><b>Sailor Fish</b><span>Рыба и морепродукты, стоит прямо у моря.</span></div>
+              <div class="place"><b>Turca</b><span>Турецкая кухня, в том числе старинные османские блюда.</span></div>
+              <div class="place"><b>Cactus</b><span>Мексиканская кухня: гуакамоле, фахитас, тако.</span></div>
+            </div>
+            <p class="small muted">По отзывам за 2025–2026 годы, бесплатно полагается один ужин а-ля карт за отдых, остальные платные. Бронируют на отдельной стойке а-ля карт, а не в Guest Relations. Ужин с 19:00 до 21:00, мест мало, поэтому приходите на запись с утра. Мужчинам лучше взять брюки.</p>
+          </div>
+
+          <div class="stack">
+            <h3>Бары</h3>
+            <div>
+              <div class="place"><b>Clark Gable Bar · круглосуточно</b><span>Главный бар отеля. Местный и импортный алкоголь, авторские коктейли, полное меню напитков.</span></div>
+              <div class="place"><b>Лобби-бар</b><span>По отзывам, лучшие коктейли и импортный алкоголь здесь. Хвалят барменов Сонера и Руслана.</span></div>
+              <div class="place"><b>Sunset Bar · вечером</b><span>Живая музыка и закуски, красиво на закате. На сайте его нет, о нём пишут гости.</span></div>
+              <div class="place"><b>Бар в бассейне 16+ · днём</b><span>Барная стойка прямо в воде, рядом кофейня с пирожными. Вечером на террасе живая музыка.</span></div>
+              <div class="place"><b>Amfi Bar · 11:30–15:30</b><span>Свежевыжатые соки: апельсиновый, морковный, гранатовый. Рядом вафли и мороженое.</span></div>
+              <div class="place"><b>Signature Bar · с утра до ночи</b><span>Премиальные напитки и авторские коктейли в спокойной обстановке.</span></div>
+              <div class="place"><b>Disco Bar · 23:00–02:00</b><span>Ночной клуб, работает в отдельные дни недели.</span></div>
+            </div>
+            <p class="small muted">По вечерам ходит бармен с тележкой и смешивает коктейли при вас. Напитки к столику можно заказать через QR-код или приложение отеля, но иногда их долго несут.</p>
+          </div>
+
+          <div class="stack">
+            <h3>Пирс и пляж</h3>
+            <ul class="plain">
+              <li><b>Бар на пирсе</b> с 10:00: коктейли, пиво, газировка в холодильниках</li>
+              <li><b>Мороженое на пирсе</b> с 10:00, 8 видов в шариках и в упаковке</li>
+              <li><b>Курица и картошка фри</b> на пирсе с 12:00: крылья, стрипсы, чесночный и сырный соусы</li>
+              <li><b>Ресторан на пляже</b> с заказом по меню, можно весь день не уходить с моря</li>
+              <li><b>Зона для прыжков</b> в море со спасателем</li>
+              <li><b>Павильоны на пирсе</b>: 100 € на весь день (цена по отзывам за 2025 год). Свой душ, холодильник, лежаки с матрасами, отдельное меню, шампанское и фрукты. Со стороны павильонов удобные ступени в воду, на бесплатной стороне крутые лестницы.</li>
+              <li><b>Пляжные полотенца</b> выдают по карточкам, менять их можно у бассейна</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Напитки</h3>
+            <ul class="plain">
+              <li>Больше 20 авторских и больше 100 классических коктейлей. Просите коктейльную карту Premium Spirits.</li>
+              <li>Зерновой кофе во всех барах, Nespresso в некоторых.</li>
+              <li>Витаминный бар со смузи и полезными коктейлями у спортивной зоны.</li>
+              <li>За завтраком свежевыжатые соки и детокс-вода. Кофе к завтраку из автомата, вкуснее взять его в баре.</li>
+              <li>Бутылочное пиво: Efes, Bomonti, Beck's, Bud. Есть безалкогольное.</li>
+              <li>Минибар пополняют каждый день: пиво, кола, газировка, холодный чай, вода, чипсы, шоколадка.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Сервис Signature</h3>
+            <div>
+              <div class="place"><b>Wake Up Call</b><span>Скажите на ресепшн время. Утром принесут горячий кофе и свежие круассаны, можно завтракать с видом на море.</span></div>
+              <div class="place"><b>Snacks on the Skate</b><span>В определённые часы официанты на роликах развозят закуски и напитки по пляжу и пирсу.</span></div>
+              <div class="place"><b>Fine &amp; Delicious Dining</b><span>Блюда молекулярной кухни. Спросите, где и когда подают.</span></div>
+              <div class="place"><b>Holiday Assistant</b><span>Личный ассистент гостя, к нему можно обращаться с любыми просьбами.</span></div>
+              <div class="place"><b>New Age Stay</b><span>Онлайн-регистрация, просьбы через QR-код, Netflix и YouTube на телевизоре.</span></div>
+              <div class="place"><b>Music &amp; Show</b><span>Живая музыка и вечерние шоу в костюмах.</span></div>
+              <div class="place"><b>Healthy Sports Club и Fun Club</b><span>Спорт с тренерами и игровой клуб, подробнее в разделе «Развлечения в отеле».</span></div>
+              <div class="place"><b>Для семей</b><span>Детский клуб Kichi, кулинарные классы Kids Chef, уголок для малышей Baby Star. Детей в отеле много, тише всего у инфинити-бассейна.</span></div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <h3>Бассейны и пляж</h3>
+            <ul class="plain">
+              <li><b>Инфинити-бассейн 16+</b> на втором уровне, с видом на море и баром в воде. В октябре 2025 года гости писали, что его подогревали</li>
+              <li><b>Главный бассейн-река</b> через всю территорию. В конце октября вода в нём бывает холодной</li>
+              <li><b>Крытый бассейн</b> тёплый, но в отзывах жалуются на запах хлорки</li>
+              <li><b>Аквапарк</b>: 8 больших горок в отдельной зоне. В октябре горки работали около 4 часов в день, до 16:00</li>
+              <li><b>Пляж</b> песчаный, под сплошным тентом. Вход в море из гальки, крутой, через пару метров уже глубоко</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Платно</h3>
+            <ul class="plain">
+              <li>Массажи и SPA-процедуры, примерно 65–150 € в час</li>
+              <li>Павильон на пирсе, 100 € в день</li>
+              <li>Поздний выезд, оплата по часам, а не за сутки</li>
+              <li>Отельный фотограф: в отзывах пишут, что дорого</li>
+              <li>Кальян, парикмахерская, тату-салон, магазины в главном корпусе</li>
+              <li>Рум-сервис, глажка (около 1 € за рубашку), врач</li>
+              <li>Водные виды спорта, обычно только летом</li>
+            </ul>
+          </div>
+          <p class="src">Источник: сайт отеля belazur.com.tr, разделы Restaurants, Bars, Signature, Pools &amp; Waterparks. Время и дни работы отель может менять по погоде.</p>
+        </div>
+      </details>
+
+      <details class="acc" id="reviews">
+        <summary>Выводы из отзывов</summary>
+        <div class="acc-body">
+          <div class="stack">
+            <p>Прочитано около 150 отзывов за 2018–2026 годы на TopHotels, Tripadvisor и ht.kz, отдельно все октябрьские. Рейтинг на TopHotels 4,6 из 5, отель рекомендуют 83% гостей. На Tripadvisor почти 3000 отзывов.</p>
+          </div>
+
+          <div class="stack">
+            <h3>Что хвалят почти все</h3>
+            <ul class="plain">
+              <li><b>Еда.</b> Главный плюс отеля: рыбу жарят при вас, морепродукты и красная рыба каждый день, суши, тандыр, симиты с каймаком и мёдом на завтрак.</li>
+              <li><b>Персонал.</b> Guest Relations сами подходят спросить, всё ли в порядке, в WhatsApp отвечают за 10 минут. Много сотрудников из Казахстана, говорят по-русски.</li>
+              <li><b>Пирс</b>, по словам гостей, лучший на этом побережье.</li>
+              <li><b>Бассейн 16+</b> на втором уровне: тихо и без детей.</li>
+              <li><b>Коктейли</b> в лобби-баре и у миксологов.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>На что жалуются</h3>
+            <ul class="plain">
+              <li><b>Уборка нестабильная:</b> песок в номере, забывают пополнить минибар и чай. Решается сообщением в WhatsApp.</li>
+              <li><b>Полотенца и бельё</b> старые, местами застиранные.</li>
+              <li><b>Территория маленькая</b>, гулять почти негде.</li>
+              <li><b>Вход в море</b> каменистый и крутой, море в Белеке мутноватое от песка.</li>
+              <li><b>Много детей</b>, курить на территории разрешено.</li>
+              <li><b>Слышимость:</b> в части номеров тонкие стены, громко хлопают двери, в 5 утра с открытым балконом слышно мечеть.</li>
+              <li><b>Старые корпуса</b> требуют ремонта. В новых корпусах бывает ванная без двери.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Октябрь: чего ждать</h3>
+            <ul class="plain">
+              <li>Погода обычно отличная: +25…35 °C, море тёплое. Но бывают штормовые дни, когда купаться нельзя.</li>
+              <li>Открытые бассейны холодные, теплее всего в бассейне 16+. Крытый бассейн тёплый, но пахнет хлоркой.</li>
+              <li>Горки работают около 4 часов в день.</li>
+              <li>Шезлонгов хватает, очередей почти нет. Лучшие места на пирсе всё равно занимают к 7:30–8:00.</li>
+              <li>Анимация работает в полную силу. Были Октоберфест, пенные вечеринки, «гранатовая» вечеринка и украшения к Хэллоуину.</li>
+              <li>Гостей много из Германии и Польши, но русскоязычных тоже хватает.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Лайфхаки от гостей</h3>
+            <ul class="plain">
+              <li>Приехали рано: браслеты дадут сразу, переодеться можно в раздевалке SPA. Номер часто дают к 11:00–13:30.</li>
+              <li>В воду удобнее входить с пирса по лестнице. Обувь для моря пригодится.</li>
+              <li>Рыбу в главном ресторане можно выбрать самому, её пожарят при вас.</li>
+              <li>За ужином идите в зал 16+, там спокойнее.</li>
+              <li>Коктейли заказывайте в лобби-баре, в баре у сцены они слабее.</li>
+              <li>Чаевые горничной по $1–2 в день заметно улучшают уборку.</li>
+              <li>Низкую подушку дадут по просьбе, матрасы очень мягкие.</li>
+              <li>Рядом с отелем небольшой базар и аптеки, где говорят по-русски и принимают оплату через СБП. До Carrefour и Migros 15–20 минут пешком.</li>
+              <li>Такси у отеля иногда едут без счётчика: просите «taksimetre». До центра Белека и обратно около 40 €.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Какой номер просить</h3>
+            <ul class="plain">
+              <li>Судя по номерам комнат в отзывах, буквы и цифры корпусов совпадают: C = 3, D = 4, E = 5, H = 8, I = 9. Первая цифра номера комнаты означает корпус. Уточните на ресепшн.</li>
+              <li><b>Корпус 8 (H), новый:</b> тихий, вдали от сцены и баров, свежий ремонт, есть боковой вид на море. Минусы новых корпусов: в части номеров нет двери у умывальника, стеклянные балконы, иногда гудят чиллеры, из некоторых окон видна мечеть.</li>
+              <li><b>Корпус E (5):</b> всё зависит от стороны. Окна на бассейн, море и Sunset Bar хвалят. Нижние этажи со стороны соседнего отеля Sherwood выходят на технический проход, где с утра шумно.</li>
+              <li><b>Корпуса 2 и 3:</b> есть номера с боковым видом на море, за них обычно доплачивают.</li>
+              <li><b>Хуже:</b> корпус 9 (I) самый дальний. Номера в дальнем конце этажа лобби шумные: рядом служебная лестница и комната горничных. На первых этажах слышно вечернюю музыку, у части номеров балкон выходит прямо к столикам бара.</li>
+              <li><b>Почему повыше:</b> тише, корпуса стоят близко друг к другу, а сверху лучше вид.</li>
+              <li>Громкая музыка на территории до 23:00, потом тихо.</li>
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Редкие жалобы и как подстраховаться</h3>
+            <ul class="plain">
+              <li>Запах канализации в номере (несколько отзывов). Проверьте номер сразу и просите другой.</li>
+              <li>Клопы (один отзыв за сентябрь 2025 года). Осмотрите швы матраса, чемоданы держите на подставке.</li>
+              <li>Пищевое отравление (один отзыв за сентябрь 2025 года). Возьмите сорбент, пейте бутилированную воду.</li>
+              <li>Вечерний промышленный запах, по словам персонала от завода оливкового масла (отзыв за сентябрь 2026 года, похожий был у соседнего отеля). Если появится, закройте балкон и включите кондиционер.</li>
+              <li>Навязчивое внимание сотрудников к девушкам (один отзыв за июль 2026 года). Если что-то неприятно, сразу пишите в Guest Relations.</li>
+              <li>Ценные вещи и зарядки держите в сейфе.</li>
+            </ul>
+          </div>
+          <p class="src">Выводы собраны из TopHotels, Tripadvisor (русские и переведённые отзывы) и ht.kz. Отзовик и Level.Travel недоступны из-за проверки на бота. Отзывы, похожие на шаблонные, учтены слабее.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Мои контакты</summary>
+        <div class="acc-body">
+          <p class="small muted" id="notes-hint">Эти поля общие, их видите вы оба. Заполните перед вылетом.</p>
+          <div class="notes-grid">
+            <label class="lbl">Номер комнаты<input type="text" data-bind="notes.room" maxlength="60" placeholder="Скажут на ресепшн"></label>
+            <label class="lbl">Гид туроператора: имя и телефон<input type="text" data-bind="notes.guide" maxlength="120" placeholder="Узнаете на встрече в отеле"></label>
+            <label class="lbl">Горячая линия туроператора<input type="text" data-bind="notes.tohot" maxlength="120" placeholder="Есть в ваучере"></label>
+            <label class="lbl">Страховка: телефон ассистанса<input type="text" data-bind="notes.insurance" maxlength="120" placeholder="Есть в полисе"></label>
+            <label class="lbl">Номер полиса<input type="text" data-bind="notes.policy" maxlength="80"></label>
+            <label class="lbl">Время трансфера 23 октября<input type="text" data-bind="notes.transfer" maxlength="60" placeholder="Скажет гид за 1–2 дня"></label>
+          </div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Отель: адрес, контакты, SPA</summary>
+        <div class="acc-body">
+          <dl class="kv">
+            <dt>Адрес</dt><dd><div class="copyrow"><span class="v">Boğazkent Mah., 31. Sk. No:8, 07552 Serik/Antalya</span><button class="btn soft sm" type="button" data-copy="Kirman Belazur Resort &amp; Spa, Boğazkent Mah., 31. Sk. No:8, 07552 Serik/Antalya">Копировать</button></div></dd>
+            <dt>Ресепшн</dt><dd><div class="copyrow"><span class="v mono">+90 242 731 03 03</span><button class="btn soft sm" type="button" data-copy="+902427310303">Копировать</button></div></dd>
+            <dt>WhatsApp</dt><dd><div class="copyrow"><span class="v mono">+90 541 739 03 03</span><a class="btn soft sm" href="https://wa.me/905417390303" target="_blank" rel="noopener">Открыть</a></div></dd>
+            <dt>E-mail</dt><dd><span class="v">info@belazur.com.tr</span></dd>
+            <dt>Заселение</dt><dd>с 14:00, выселение до 12:00. Ранний заезд и поздний выезд по запросу, обычно платно.</dd>
+            <dt>До аэропорта</dt><dd>около 40 км, 45–60 минут</dd>
+            <dt>Wi-Fi</dt><dd>бесплатный по всей территории, по отзывам бывает медленным</dd>
+          </dl>
+          <div class="stack">
+            <h3>SPA</h3>
+            <ul class="plain">
+              <li><b>Входит в стоимость</b> (по отзывам): турецкая баня, финская сауна, снежный фонтан</li>
+              <li><b>Платно</b>: массажи (тайский, бали, аромамассаж, «Султан» в четыре руки), пенный массаж и пилинг в хаммаме, уход за лицом</li>
+              <li>Спросите про пакеты для пары, в конце сезона часто бывают скидки</li>
+            </ul>
+          </div>
+          <p class="src">Источники: сайт отеля belazur.com.tr, TopHotels, отзывы гостей. Цены на SPA уточняйте на месте.</p>
+        </div>
+      </details>
+
+      <details class="acc" id="fun">
+        <summary>Развлечения в отеле</summary>
+        <div class="acc-body">
+          <div class="stack">
+            <h3>Вечером</h3>
+            <div>
+              <div class="place"><b>Шоу в амфитеатре</b><span>Каждый вечер, около 21:00. Танцевальные коллективы, акробаты, костюмы. Программа меняется каждую неделю.</span></div>
+              <div class="place"><b>Дискотека на пляжной террасе</b><span>В сентябре 2026 года была каждый вечер после шоу. Ещё есть Disco Bar в главном корпусе, с 23:00, не каждый день.</span></div>
+              <div class="place"><b>Пенные и тематические вечеринки</b><span>Несколько раз в неделю. В прошлые октябри были Октоберфест, «гранатовая» вечеринка, белая вечеринка, пенная вечеринка с красками холи.</span></div>
+              <div class="place"><b>Живая музыка</b><span>В Sunset Bar и на террасе у бассейна 16+. На ужине в главном ресторане встречают музыкантами.</span></div>
+              <div class="place"><b>Караоке</b><span>В баре на нижнем этаже главного корпуса.</span></div>
+              <div class="place"><b>Тематические ужины</b><span>Почти каждый вечер в главном ресторане: турецкий, османский, итальянский, техасско-мексиканский, гала-ужин. Для взрослых есть отдельный зал 16+.</span></div>
+            </div>
+            <p class="small muted">По воскресеньям у аниматоров выходной. Вечеринки начинаются поздно, днём лучше отдохнуть.</p>
+          </div>
+          <div class="stack">
+            <h3>Днём, бесплатно</h3>
+            <ul class="plain">
+              <li><b>Игровой клуб</b>: 2 дорожки боулинга, бильярд, PlayStation, аэрохоккей, игровые автоматы. Боулинг и PlayStation бронируют за день, с 12:00. Вечером всё занято.</li>
+              <li><b>Спортклуб</b>: утренняя зарядка, йога, стретчинг, зумба, аквааэробика, батут. Расписание объявляют утром у бассейна.</li>
+              <li><b>Меткость</b>: стрельба из лука, пневматическая винтовка, дартс, бочча</li>
+              <li><b>Игры</b>: пляжный волейбол каждое утро, настольный теннис, баскетбол, мини-футбол. Теннисного корта, по отзыву за 2024 год, нет.</li>
+              <li><b>Аквапарк</b>: 8 горок для взрослых, в октябре примерно до 16:00</li>
+              <li><b>Хаммам, финская сауна, парная, снежный фонтан</b> в SPA</li>
+              <li><b>Фитнес-зал</b>: небольшой, но с нужным оборудованием</li>
+            </ul>
+          </div>
+          <div class="stack">
+            <h3>Как ничего не пропустить</h3>
+            <ul class="plain">
+              <li>В первый день возьмите программу анимации на неделю. Её объявляют утром у бассейна, есть и на сайте отеля.</li>
+              <li>Боулинг бронируйте накануне, с 12:00.</li>
+              <li>Узнайте, когда развозят Snacks on the Skate.</li>
+              <li>Закажите Wake Up Call хотя бы на одно утро.</li>
+            </ul>
+          </div>
+          <p class="src">Источники: сайт отеля, TopHotels, Tripadvisor, ht.kz. Около 150 отзывов за 2018–2026 годы.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Обмен валюты</summary>
+        <div class="acc-body">
+          <div>
+            <div class="place"><b>Office Cash Money &amp; Crypto Exchange</b><span>Богазкент, Mehmet Akif Ersoy Cad. No:67 · с 08:30, есть банкомат</span><span class="mono small">+90 532 786 74 89</span><a href="https://www.google.com/maps/search/?api=1&amp;query=Office%20Cash%20Money%20Exchange%20Bo%C4%9Fazkent" target="_blank" rel="noopener">Открыть на карте</a></div>
+            <div class="place"><b>Saçaklı Döviz</b><span>Богазкент · часы работы проверьте на карте</span><a href="https://www.google.com/maps/search/?api=1&amp;query=Sa%C3%A7akl%C4%B1%20D%C3%B6viz%20Bo%C4%9Fazkent" target="_blank" rel="noopener">Открыть на карте</a></div>
+            <div class="place"><b>Belek Karbağ Döviz</b><span>Белек, Atatürk, 1. Cad. · в 8 км от отеля</span><span class="mono small">+90 505 056 90 50</span><a href="https://www.google.com/maps/search/?api=1&amp;query=Karba%C4%9F%20D%C3%B6viz%20Belek" target="_blank" rel="noopener">Открыть на карте</a></div>
+            <div class="place"><b>Все обменники рядом</b><a href="https://www.google.com/maps/search/?api=1&amp;query=d%C3%B6viz%20b%C3%BCrosu%20Bo%C4%9Fazkent" target="_blank" rel="noopener">Поиск «döviz bürosu» в Богазкенте</a></div>
+          </div>
+          <ul class="plain">
+            <li>Меняйте в döviz bürosu в Богазкенте или Белеке. В отеле, аэропорту и банке курс хуже.</li>
+            <li>Смотрите колонку <b>Alış</b>: по этому курсу у вас покупают доллары.</li>
+            <li>Комиссии обычно нет. Пересчитайте деньги у окошка.</li>
+            <li>Везите целые чистые купюры по $100 нового образца. Мятые и надорванные могут не принять или поменять по худшему курсу.</li>
+            <li>Меняйте понемногу, по $100–200. В отеле всё включено, лиры нужны на рынок, такси, кафе и чаевые.</li>
+            <li>По воскресеньям обменники в Турции часто закрыты. Если в воскресенье не получилось, Office Cash в Богазкенте открывается в 08:30.</li>
+            <li>Если цена указана в долларах, пересчитайте в лиры в конвертере. Платить в лирах часто выгоднее.</li>
+            <li>Карты российских банков в Турции, как правило, не работают. Рассчитывайте на наличные.</li>
+          </ul>
+          <p class="src">Адреса по данным Яндекс Карт. Перед походом проверьте часы работы.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Шопинг и прогулки</summary>
+        <div class="acc-body">
+          <div class="stack">
+            <h3>Рядом с отелем</h3>
+            <div>
+              <div class="place"><b>Аспендос · 20 минут на такси</b><span>Римский театр II века, один из самых сохранившихся в мире, рядом акведук. Вход около 15 €, открыт с 8:00. На всё 2–3 часа. Утром там меньше людей и не так жарко.</span><a href="https://www.google.com/maps/search/?api=1&amp;query=Aspendos%20Antik%20Tiyatrosu" target="_blank" rel="noopener">Открыть на карте</a></div>
+              <div class="place"><b>У отеля</b><span>Небольшой базар с одеждой, сладостями и сувенирами, аптеки с русскоговорящими провизорами и оплатой через СБП. До Carrefour и Migros 15–20 минут пешком, там принимают лиры, доллары и евро.</span></div>
+              <div class="place"><b>Рынок в Богазкенте · среда</b><span>93. Sokak. Фрукты, специи, орехи, текстиль, сувениры. Самый близкий к отелю.</span></div>
+              <div class="place"><b>Рынок в Белеке · суббота</b><span>Atatürk Cad. и Mehmet Akif Ersoy Cad., около 8 км. Большой туристический рынок.</span></div>
+              <div class="place"><b>Рынок в Кадрие · вторник</b><span>Cumhuriyet Cad., за Белеком.</span></div>
+              <div class="place"><b>The Land of Legends, Кадрие</b><span>Открытая торговая улица Shopping Avenue, вход свободный. Вечером шоу фонтанов и парад лодок, смотреть можно бесплатно. Время шоу проверьте на сайте.</span><a href="https://www.thelandoflegends.com" target="_blank" rel="noopener">thelandoflegends.com</a></div>
+            </div>
+          </div>
+          <div class="stack">
+            <h3>Анталья · около часа на такси</h3>
+            <div>
+              <div class="place"><b>Калеичи, старый город</b><span>Ворота Адриана, минарет Йивли, часовая башня, старая гавань. На закат в гавань приходите к 18:00.</span></div>
+              <div class="place"><b>MarkAntalya</b><span>ТЦ в центре, рядом с Калеичи. Удобно совместить с прогулкой.</span></div>
+              <div class="place"><b>TerraCity</b><span>Большой ТЦ в районе Лара, много брендов.</span></div>
+              <div class="place"><b>Mall of Antalya и Deepo Outlet</b><span>Возле аэропорта. В Deepo одежда брендов со скидками.</span></div>
+            </div>
+          </div>
+          <div class="stack">
+            <h3>Что искать</h3>
+            <ul class="plain">
+              <li>Одежда: LC Waikiki, DeFacto, Koton, Mavi (джинсы), Colin’s</li>
+              <li>Косметика: Flormar, Golden Rose</li>
+              <li>Сладости и кофе: лукум и пахлава, кофе Kurukahveci Mehmet Efendi, чай Çaykur</li>
+              <li>С рынка: специи, сухофрукты, оливковое мыло, пештемаль</li>
+            </ul>
+          </div>
+          <div class="stack">
+            <h3>Как не переплатить</h3>
+            <ul class="plain">
+              <li>На рынках и в туристических лавках торгуйтесь, начинайте с половины названной цены. В ТЦ и сетевых магазинах цены фиксированные.</li>
+              <li>«Шопинг-туры» с заездами на фабрики кожи и ювелирки обычно дороже, чем самостоятельная поездка.</li>
+              <li>В такси попросите включить счётчик («taksimetre») или договоритесь о цене до посадки.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Разговорник</summary>
+        <div class="acc-body">
+          <p class="small muted">Нажмите на фразу, чтобы показать её крупно собеседнику.</p>
+          <div id="phrases" class="stack"></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Экстренные номера</summary>
+        <div class="acc-body">
+          <dl class="kv">
+            <dt>112</dt><dd>Единый номер: скорая, полиция, пожарные</dd>
+            <dt>155</dt><dd>Полиция</dd>
+            <dt>156</dt><dd>Жандармерия, полиция вне городов</dd>
+            <dt>Ресепшн</dt><dd class="mono">+90 242 731 03 03</dd>
+          </dl>
+          <div class="stack">
+            <h3>Генконсульство России в Анталье</h3>
+            <p>Çağlayan Mah., 2011 Sk. No:10, Muratpaşa, Antalya</p>
+            <dl class="kv">
+              <dt>Приёмная</dt><dd><span class="mono">+90 242 248 32 02</span>, пн–пт 09:00–13:00</dd>
+              <dt>Дежурный</dt><dd><span class="mono">+90 541 417 87 78</span>, при угрозе жизни и безопасности</dd>
+            </dl>
+          </div>
+          <p class="small muted">Если потеряли паспорт: заявление в полицию или жандармерию, затем консульство выдаст свидетельство на возвращение. Держите фото документов в телефоне.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>Полезно знать</summary>
+        <div class="acc-body">
+          <ul class="plain">
+            <li>Время в Турции такое же, как в Казани (UTC+3). Часы переводить не нужно.</li>
+            <li>Розетки как дома: 220 В, вилки C и F. Переходник не нужен.</li>
+            <li>Виза гражданам России не нужна, если поездка короче 60 дней. Загранпаспорт лучше иметь с запасом: минимум 150 дней после въезда.</li>
+            <li>Воду из-под крана не пейте. Для зубов и чая берите бутилированную из минибара.</li>
+            <li>Паспорта и доллары храните в сейфе номера.</li>
+            <li>Браслет не снимайте: по нему обслуживают в барах и ресторанах.</li>
+            <li>Темнеет рано, около 18:15. На пляж лучше идти с утра.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </main>
+</div>
+
+<nav class="tabbar" aria-label="Разделы">
+  <div class="tabbar-in" role="tablist">
+    <button class="tab" type="button" role="tab" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>Сегодня</button>
+    <button class="tab" type="button" role="tab" data-tab="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>План</button>
+    <button class="tab" type="button" role="tab" data-tab="pack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 13h18"/></svg>Сборы</button>
+    <button class="tab" type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/></svg>Деньги</button>
+    <button class="tab" type="button" role="tab" data-tab="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.01"/></svg>Инфо</button>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay" hidden role="dialog" aria-label="Фраза крупно">
+  <span class="o-close">Нажмите, чтобы закрыть</span>
+  <div class="o-tr" id="o-tr"></div>
+  <div class="o-pron" id="o-pron"></div>
+  <div class="o-ru" id="o-ru"></div>
+</div>
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+
+<script type="application/json" id="base">{"plan":{"items":{"p01":{"day":"2026-10-16","done":false,"more":{"link":[["Онлайн-регистрация Southwind","https://southwindairlines.com/ru/check-in"]],"steps":["Сверьте время вылета в квитанции. На сайтах расписаний у 2S-024 встречается 01:20 вместо 02:00, у чартеров время часто меняется","Зарегистрируйтесь на сайте southwindairlines.com и сохраните посадочные скриншотом","Места рядом не гарантированы. Если посадили раздельно, можно доплатить за выбор места: около 10 € в середине ряда, около 25 € у окна или прохода. Или попросите на стойке при сдаче багажа","Норма багажа указана в квитанции. У Southwind минимум 10 кг багажа, ручная кладь до 10 кг, 40×30×20 см","Еду на борту продают только за наличные, вода бесплатно. Поешьте дома или в аэропорту"],"t":"Онлайн-регистрация открывается за 24 часа до вылета и закрывается за 3 часа. Для рейса в 02:00 это 16 октября с 02:00 до 23:00. Понадобятся код бронирования из маршрутной квитанции и фамилия латиницей, точно как в квитанции."},"note":"«Южный ветер» (Southwind), бесплатно. Открыта до 23:00","o":2,"time":"18:00","title":"Онлайн-регистрация на рейс 2S-024"},"p02":{"day":"2026-10-16","done":false,"more":{"steps":["Загранпаспорта у каждого","Доллары: целые чистые купюры нового образца. Лучше по $100, плюс немного по $1–5 на чаевые","Ваучер, посадочные и полис сохранены в телефоне","В ручную кладь: купальники, шлёпанцы, лёгкая одежда. Номер дадут не сразу, переодеваться будете в SPA","Пауэрбанк только в ручную кладь, в багаж его сдавать нельзя","Зарядки, беруши и маска для сна"],"t":"Пройдитесь по вкладке «Сборы» и отметьте галочками. Самое важное проверьте руками:"},"note":"Вкладка «Сборы»","o":3,"time":"20:00","title":"Финальные сборы по чек-листу"},"p03":{"day":"2026-10-16","done":false,"more":{"link":[["Табло аэропорта Казани","https://kzn.ru/"]],"t":"Международные рейсы из Казани обычно улетают из терминала 1А. Проверьте на табло аэропорта kzn.ru по номеру 2S-024.\n\nСразу договоритесь, что вас встретят 24 октября около полуночи. Номер обратного рейса 2S-023, точное время прилёта будет в квитанции."},"note":"Вас отвезут. За полчаса уточните, что водитель в пути","o":4,"time":"21:45","title":"Выезд в аэропорт Казани"},"p04":{"day":"2026-10-16","done":false,"more":{"t":"Стойки регистрации открываются примерно за 3 часа до вылета. Если прошли онлайн-регистрацию, идите к стойке сдачи багажа (Baggage drop), очередь там обычно меньше.\n\nНа паспортном контроле нужны только загранпаспорта. Жидкости в ручной клади до 100 мл в прозрачном пакете. Воду и перекус купите после досмотра: в самолёте еда только за наличные."},"note":"Регистрация закрывается примерно за 40 минут до вылета","o":5,"time":"23:00","title":"Аэропорт: багаж и паспортный контроль"},"p05":{"day":"2026-10-17","done":false,"more":{"t":"Постарайтесь поспать: беруши, маска и подушка для шеи очень помогут, утром будет длинный день. Воду раздают бесплатно дважды за полёт.\n\nВиза гражданам России не нужна, заполнять в самолёте ничего не надо."},"note":"Около 4 часов в полёте, разницы во времени нет","o":6,"time":"02:00","title":"Вылет KZN → AYT"},"p06":{"day":"2026-10-17","done":false,"more":{"say":[["Kirman Belazur Hotel, Belek. One week.","кирман белазур хотэл, белек. уан уик","Отель Kirman Belazur, Белек. На неделю"]],"t":"Идите за потоком по указателям Passport Control, потом Baggage Claim. Ленту с багажом ищите на табло по номеру рейса 2S-024.\n\nНа паспортном контроле обычно ничего не спрашивают. Если спросят отель, покажите фразу ниже."},"note":"Паспортный контроль, затем багаж","o":7,"time":"06:00","title":"Прилёт в Анталью"},"p07":{"day":"2026-10-17","done":false,"more":{"t":"После багажа выходите из зоны прилёта и ищите людей с табличками и стойку с логотипом PEGAS Touristik. Покажите ваучер в телефоне: скажут номер автобуса. Групповой трансфер развозит туристов по нескольким отелям, до Богазкента около часа.\n\nСвои чемоданы носильщикам не отдавайте, это платная услуга. Туалет лучше посетить до автобуса.\n\nЕсли представителя не видно, позвоните в офис Pegas.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"]]},"note":"Сразу после выхода из зоны прилёта","o":8,"time":"07:00","title":"Стойка PEGAS Touristik и автобус"},"p08":{"day":"2026-10-17","done":false,"more":{"say":[["A quiet room on a high floor, please. Building 8, if possible.","э квайэт рум он э хай флор, плиз. билдинг эйт, иф посибл","Тихий номер на высоком этаже, по возможности в корпусе 8"],["Sessiz bir oda rica ediyoruz, üst katta.","сессиз бир ода риджа эдийоруз, юст катта","Просим тихий номер на верхнем этаже"],["Please send us a WhatsApp message when the room is ready.","плиз сэнд ас э вотсап мэсидж уэн зэ рум из рэди","Напишите нам в WhatsApp, когда номер будет готов"]],"t":"Многие сотрудники говорят по-русски. Отдайте паспорта и ваучер, заполните анкету. Браслеты наденут сразу, даже если номер ещё не готов.\n\nУ вас Standard Room Land View, то есть с видом на территорию. Поэтому просите не вид на море, а тишину: верхний этаж, подальше от сцены, баров и технических проходов. Лучше всего новый корпус 8 (H). В корпусе E (5) нижние этажи со стороны отеля Sherwood шумные.\n\nЧаевые: вложите $10–20 в паспорт или отдайте вместе с ним и спокойно скажите просьбу. Попросите написать в WhatsApp, когда номер будет готов, и узнайте пароль от Wi-Fi."},"note":"Standard Land View. Просите тихий номер повыше, лучше в корпусе 8 (H)","o":9,"time":"08:30","title":"Ресепшн: регистрация и просьба о номере"},"p09":{"day":"2026-10-17","done":false,"more":{"t":"Чемоданы оставьте на ресепшн в камере хранения (luggage room), с собой возьмите сумку с купальниками. Переодеться можно в раздевалке SPA.\n\nЗавтрак до 10:00, поздний завтрак до 10:30. После ночного рейса сначала поешьте, в воду не торопитесь."},"note":"Чемоданы в камеру хранения, переодеться в SPA","o":10,"time":"09:00","title":"Завтрак и переодеться"},"p10":{"day":"2026-10-17","done":false,"more":{"say":[["Italian restaurant, October 19th, 7 pm, for two.","итальян рестрон, октоубер найнтинс, сэвэн пи-эм, фо ту","Итальянский ресторан, 19 октября, 19:00, на двоих"]],"t":"Где стойка а-ля карт, спросите на ресепшн: бронируют там, а не в Guest Relations. По отзывам, бесплатно полагается один ужин за отдых, мест мало, поэтому записываются с утра.\n\nНазовите номер комнаты. Если его ещё нет, назовите фамилию по ваучеру. Говорить можно по-русски. Если бронь на 19-е откроется только накануне, приходите 18-го к открытию стойки.\n\nСразу уточните дресс-код: мужчине, скорее всего, понадобятся брюки."},"note":"Ваш бесплатный ужин: понедельник, 19 октября, 19:00","o":11,"time":"10:00","title":"Стойка а-ля карт: бронь итальянского"},"p11":{"day":"2026-10-17","done":false,"more":{"steps":["Их WhatsApp. Туда потом пишете про уборку, минибар и полотенца, отвечают быстро","Программу анимации на неделю: шоу, тематические ужины, пенная вечеринка, дни Disco Bar","Расписание спортклуба: йога, зарядка, стрельба из лука","Где игровой клуб: боулинг бронируют за день, с 12:00","Когда развозят Snacks on the Skate и где подают Fine & Delicious Dining"],"t":"Guest Relations — стойка в лобби, там помогают с любыми вопросами. Попросите:","tel":[["Ресепшн отеля","+90 242 731 03 03"]],"wa":[["WhatsApp отеля","+90 541 739 03 03"]]},"note":"Сохранить WhatsApp, взять программу анимации на неделю","o":12,"time":"10:30","title":"Guest Relations"},"p12":{"day":"2026-10-17","done":false,"more":{"t":"Пляжные полотенца выдают по полотенечным картам. Где их взять, спросите на ресепшн или у бассейна.\n\nВ воду удобнее спускаться с пирса по лестнице, чем с гальки. Со стороны павильонов ступени пологие, на бесплатной стороне лестницы крутые. Обувь для моря пригодится.\n\nУ бара на пирсе спросите, сколько стоит павильон в октябре, что входит и можно ли платить долларами. По отзывам 2025 года — 100 € в день. Решать сейчас не нужно, напоминание будет 21-го."},"note":"Посмотрите павильоны и спросите цену","o":14,"time":"11:00","title":"Первый пляж и пирс"},"p13":{"day":"2026-10-17","done":false,"more":{"say":[["Can we change the room, please? There is a bad smell.","кэн уи чейндж зэ рум, плиз? зэр из э бэд смел","Можно поменять номер? Плохой запах"],["Can we change the room, please? It is very noisy.","кэн уи чейндж зэ рум, плиз? ит из вэри нойзи","Можно поменять номер? Очень шумно"],["Odayı değiştirebilir miyiz?","одайы дэиштирэбилир мийиз?","Можно поменять номер?"]],"steps":["Запах в ванной: иногда пахнет канализацией","Кондиционер: включите на холод","Матрас: осмотрите швы. Чемоданы держите на подставке","Сейф: работает ли. Уберите туда паспорта и доллары","Балкон: что под окнами и не шумно ли","Минибар, чайник, полотенца","Запишите номер комнаты во «Инфо»"],"t":"Если что-то не так, сразу идите на ресепшн или пишите в Guest Relations и просите другой номер, пока не разложили вещи. Потом поспите после ночного рейса."},"note":"Проверьте всё в первые 10 минут, до распаковки","o":15,"time":"13:00","title":"Заселение и проверка номера"},"p14":{"day":"2026-10-17","done":false,"more":{"t":"Ужин в главном ресторане с 18:30 до 21:00. Зал 16+ без детей, там тише. Где он, спросите у входа.\n\nРыбу выбирают на льду и отдают повару на гриль, её приносят к столу или зовут забрать. В пляжной одежде в ресторан не пускают."},"note":"Главный ресторан. Рыбу выбираете сами, её пожарят при вас","o":17,"time":"18:30","title":"Ужин в зале 16+"},"p15":{"day":"2026-10-17","done":false,"more":{"t":"Шоу начинается около 21:00, программа меняется каждую неделю. Хорошие места занимают минут за 10–15. Коктейли в баре у сцены, по отзывам, слабее, чем в лобби-баре."},"note":"Недолго: завтра ранний подъём","o":18,"time":"21:00","title":"Вечернее шоу в амфитеатре"},"p16":{"day":"2026-10-17","done":false,"more":{"say":[["Wake-up call at 6:45 with coffee and croissants for two, please. Room …","уэйк-ап кол эт сикс форти-файв уиз кофи энд круасонс фо ту, плиз. рум …","Разбудите в 6:45 и принесите кофе с круассанами на двоих. Номер …"]],"t":"Скажите на ресепшн по пути на ужин или напишите в WhatsApp. Это услуга Signature: в назначенное время позвонят и принесут горячий кофе и круассаны, можно позавтракать на балконе. Назовите номер комнаты, время и сколько чашек кофе.","wa":[["WhatsApp отеля","+90 541 739 03 03"]]},"note":"Утром принесут кофе и круассаны","o":16,"time":"18:15","title":"Заказать Wake Up Call на 06:45"},"p17":{"day":"2026-10-18","done":false,"more":{"t":"Если кофе не принесли, позвоните на ресепшн. Выпейте на балконе и сразу на пирс, пока там пусто.","tel":[["Ресепшн отеля","+90 242 731 03 03"]]},"note":"Wake Up Call","o":19,"time":"06:45","title":"Кофе и круассаны в номер"},"p18":{"day":"2026-10-18","done":false,"more":{"t":"Лучшие шезлонги на пирсе занимают к 7:30–8:00. Положите полотенца и вещи и идите на завтрак. Бар на пирсе открывается в 10:00."},"note":"Солнце встаёт около 07:05. Заодно займите лучшие шезлонги","o":20,"time":"07:00","title":"Рассвет на пирсе"},"p19":{"day":"2026-10-18","done":false,"more":{"t":"Свежевыжатый апельсиновый сок и детокс-вода стоят на отдельной стойке. Кофе к завтраку из автомата, вкуснее взять его в любом баре."},"note":"Омлет на заказ, симиты с каймаком и мёдом","o":21,"time":"08:00","title":"Завтрак"},"p20":{"day":"2026-10-18","done":false,"more":{"t":"Вход с берега галечный и крутой, через пару метров уже глубоко. С пирса спускайтесь по лестнице. Есть зона для прыжков со спасателем. В ветреные дни, если висит красный флаг, купаться нельзя."},"note":"По лестнице в воду удобнее, чем с каменистого берега","o":22,"time":"09:00","title":"Море с пирса"},"p21":{"day":"2026-10-18","done":false,"more":{"pl":[{"a":"Boğazkent Mah., Mehmet Akif Ersoy Cad. No:67, Serik","h":"С 08:30, есть банкомат. Часы в воскресенье не подтверждены","n":"Office Cash Money & Crypto Exchange","q":"Office Cash Money Exchange Boğazkent","tel":"+90 532 786 74 89"},{"a":"Boğazkent Mah., Serik","h":"Круглосуточно","n":"Такси Богазкента","q":"Boğazkent taksi","tel":"+90 543 601 28 02"}],"say":[["Dolar bozdurmak istiyorum. Kur ne kadar?","долар боздурмак истийорум. кур нэ кадар?","Хочу поменять доллары. Какой курс?"],["Yarın saat dokuzda Aspendos'a gidip dönmek istiyoruz. Bizi bekler misiniz? Toplam ne kadar?","ярын саат докузда аспендоса гидип дёнмек истийоруз. бизи беклер мисиниз? топлам нэ кадар?","Завтра в 9 хотим в Аспендос и обратно. Подождёте нас? Сколько за всё?"]],"steps":["Обменник Office Cash. Если открыт, поменяйте $100–200. Если закрыт, поменяете завтра в 08:30 перед Аспендосом","У окошка смотрите колонку Alış: по этому курсу у вас покупают доллары. Пересчитайте лиры, не отходя","Найдите стоянку такси и договоритесь на завтра, 09:00: Аспендос, ожидание, обратно. Возьмите телефон водителя","Если договорились, запишите цену и имя водителя в заметку в телефоне"],"t":"Спросите на ресепшн дорогу к центру Богазкента, к улице Mehmet Akif Ersoy Caddesi. Рядом с отелем небольшой базар и аптеки. Вернуться нужно к 12:00, чтобы записаться на боулинг."},"note":"В воскресенье обменники могут не работать. Это разведка на завтра","o":23,"time":"10:00","title":"Прогулка в Богазкент: обменник и такси"},"p22":{"day":"2026-10-18","done":false,"more":{"say":[["Bowling for two, tomorrow at 5:30 pm, please. Room …","боулинг фо ту, тумороу эт файв сёрти пи-эм, плиз. рум …","Боулинг на двоих, завтра в 17:30. Номер …"]],"t":"Дорожек всего две, вечером всё занято, поэтому приходите ровно к 12:00. Скажите номер комнаты: завтра, 19 октября, в 17:30, на двоих. Где игровой клуб, спросите в Guest Relations."},"note":"Игровой клуб, запись за день, с 12:00","o":24,"time":"12:00","title":"Записаться на боулинг на завтра"},"p23":{"day":"2026-10-18","done":false,"more":{"t":"На пирсе с 12:00 курица и картошка фри: крылья, стрипсы, чесночный и сырный соусы. Мороженого 8 видов, в шариках и в упаковке. Если хочется горячего и салатов, обед в главном ресторане идёт до 14:30."},"note":"Курица, картошка фри, мороженое","o":25,"time":"12:30","title":"Обед на пирсе"},"p24":{"day":"2026-10-18","done":false,"more":{"t":"Инфинити-бассейн на втором уровне с видом на море, барная стойка прямо в воде. Рядом кофейня с пирожными. В октябре остальные открытые бассейны заметно холоднее."},"note":"Самая тёплая вода в отеле, без детей","o":26,"time":"14:00","title":"Бассейн 16+ с баром в воде"},"p25":{"day":"2026-10-18","done":false,"more":{"say":[["Sadece hamam ve sauna, teşekkürler.","садедже хамам вэ сауна, тешеккюрлер","Только хаммам и сауна, спасибо"]],"t":"Возьмите купальники и шлёпанцы, про полотенца спросите у администратора SPA. Бесплатно: турецкая баня, финская сауна и снежный фонтан. Массаж и пенный пилинг платные, мастера будут предлагать. Достаточно вежливо отказаться. Часы работы SPA уточните у администратора."},"note":"Бесплатно, в SPA","o":27,"time":"16:30","title":"Хаммам, сауна и снежный фонтан"},"p26":{"day":"2026-10-18","done":false,"more":{"t":"Тему вечера смотрите в программе анимации. На тематические вечера иногда бывает дресс-код, например белая одежда. Проверьте в программе или спросите в Guest Relations."},"note":"Главный ресторан, зал 16+","o":28,"time":"18:30","title":"Тематический ужин"},"p27":{"day":"2026-10-18","done":false,"more":{"t":"В Sunset Bar вечером живая музыка и закуски. Закат около 18:15, так что после ужина здесь уже темно и уютно. Бармен с тележкой по вечерам смешивает коктейли прямо у столика."},"note":"В воскресенье у аниматоров выходной, вечер тихий","o":29,"time":"19:30","title":"Sunset Bar: живая музыка"},"p28":{"day":"2026-10-18","done":false,"more":{"say":[["Yarın Antalya'ya gitmek istiyoruz: Düden Şelalesi, TerraCity, Kaleiçi. Akşam dönüş. Toplam ne kadar?","ярын анталйайа гитмек истийоруз: дюден шелалеси, терра сити, калеичи. акшам дёнюш. топлам нэ кадар?","Завтра хотим в Анталью: водопад Дюден, TerraCity, Калеичи. Вечером обратно. Сколько за всё?"]],"t":"1. Погода. Откройте прогноз для Белека на 20–22 октября в Яндекс Погоде или Gismeteo. Если 20-го солнечно и тихо, поезжайте в другой день, а пляж оставьте на 20-е. В среду утром рынок, поэтому лучше 20-е или 22-е.\n\n2. Транспорт. Сравните два варианта и выберите дешевле:\n• Через гида Pegas: цена известна заранее, водитель отвезёт по всем точкам и заберёт вечером. Напишите гиду в WhatsApp по номеру со стенда (текст ниже).\n• Такси Богазкента: до Лары около 45 км. Ориентир — 2 500–3 500 лир ($50–70) в одну сторону, но цены сильно разнятся, поэтому договоритесь заранее. Обратно можно взять такси в центре Антальи по счётчику.\n\nСообщение гиду: «Здравствуйте! Мы из Kirman Belazur, номер … . Хотим 20 октября индивидуальную машину в Анталью на день: водопад Нижний Дюден, TerraCity, MarkAntalya, Калеичи. Выезд в 9:00, обратно из старой гавани около 18:45. Сколько стоит?»","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"],["Такси Богазкента, круглосуточно","+90 543 601 28 02"]]},"note":"Лучше самый пасмурный или ветреный день из 20–22 октября","o":30,"time":"21:00","title":"Выбрать день и транспорт для Антальи"},"p29":{"day":"2026-10-19","done":false,"more":{"t":"Утром море самое спокойное и прозрачное. После купания сразу на завтрак: в 08:30 обмен, в 09:00 такси."},"note":"","o":31,"time":"07:00","title":"Рассвет на пирсе и купание"},"p30":{"day":"2026-10-22","done":false,"more":{"t":"Проверьте расписание спортклуба на сегодня. Если йоги нет, есть стретчинг или просто зарядка у бассейна. Всё бесплатно."},"note":"Расписание спортклуба объявляют у бассейна","o":62,"time":"07:30","title":"Утренняя зарядка или йога"},"p31":{"day":"2026-10-19","done":false,"more":{"t":"Возьмите с собой бутылку воды из минибара: в Аспендосе мало тени."},"note":"Пораньше: впереди Аспендос","o":32,"time":"07:45","title":"Завтрак"},"p32":{"day":"2026-10-19","done":false,"more":{"pl":[{"a":"Belkıs Mah., Serik, Antalya","h":"С 08:00 до вечера, касса закрывается за 30 минут","n":"Аспендос (Aspendos Örenyeri)","q":"Aspendos Antik Tiyatrosu"}],"say":[["Aspendos'a gidip döneceğiz. Bir buçuk saat bekler misiniz?","аспендоса гидип дёнеджеиз. бир бучук саат беклер мисиниз?","Едем в Аспендос и обратно. Подождёте полтора часа?"],["Toplam ne kadar?","топлам нэ кадар?","Сколько всего?"],["Kartla öder misiniz? Size lira veririm.","картла ёдер мисиниз? сизе лира веририм","Можете заплатить картой? Я отдам вам лирами"],["Köprüde beş dakika durabilir miyiz?","кёпрюдэ беш дакика дурабилир мийиз?","Можем на 5 минут остановиться у моста?"]],"t":"Такси возьмите на стоянке в Богазкенте или попросите ресепшн вызвать. До посадки договоритесь обо всём сразу: туда, ожидание 1,5–2 часа, обратно, и общая цена. Ориентир — $50–70 за всё. Сфотографируйте номер машины и возьмите телефон водителя. Ехать около 20 минут.\n\nВход 15 € с человека. Как принимают оплату, бывает по-разному, а российские карты не пройдут, поэтому держите около 2 000 лир наличными на двоих. Если касса не примет наличные, попросите водителя заплатить картой и отдайте ему лиры.\n\nЧто смотреть: римский театр II века, поднимитесь на верхние ряды ради вида и акустики. Затем тропа на холм к акведуку и базилике, 20–30 минут. По пути можно попросить остановиться у старого сельджукского моста через реку Кёпрючай.","tel":[["Такси Богазкента, круглосуточно","+90 543 601 28 02"]]},"note":"Такси туда и обратно с ожиданием. Вход 15 € с человека","o":34,"time":"09:00","title":"Аспендос"},"p33":{"day":"2026-10-19","done":false,"more":{"t":"Если хочется полноценного обеда, в главном ресторане шведский стол до 14:30."},"note":"Снеки и уличная еда у бассейна, 12:00–16:00","o":35,"time":"12:30","title":"Обед в Food Court"},"p34":{"day":"2026-10-19","done":false,"more":{"t":"Горки аквапарка в октябре работают примерно до 16:00, если захотите прокатиться."},"note":"Отдых после жаркого утра","o":36,"time":"14:00","title":"Пляж и пирс"},"p35":{"day":"2026-10-19","done":false,"more":{"t":"Приходите вовремя: дорожек всего две, и вечером все заняты. Рядом бильярд, аэрохоккей и PlayStation, тоже бесплатно."},"note":"Бесплатно, по брони со вчерашнего дня","o":37,"time":"17:30","title":"Боулинг"},"p36":{"day":"2026-10-19","done":false,"more":{"t":"Ужин а-ля карт идёт с 19:00 до 21:00. Приходите к времени брони с браслетами. По отзывам, здесь большие порции и красивая подача, чаще всего хвалят каре ягнёнка.\n\nПрежде чем заказывать вино или крепкие напитки, спросите у официанта, входят ли они в концепцию. Чаевые $3–5 по желанию."},"note":"Бесплатный ужин. Советуют каре ягнёнка. Мужчине лучше в брюках","o":38,"time":"19:00","title":"Ужин в итальянском а-ля карт"},"p37":{"day":"2026-10-19","done":false,"more":{"say":[["Something fresh and fruity, not too strong, please.","самсинг фрэш энд фрути, нот ту стронг, плиз","Что-нибудь свежее и фруктовое, не очень крепкое"]],"t":"Хвалят барменов Сонера и Руслана. Попросите коктейльную карту Premium Spirits: там больше 20 авторских коктейлей. Если не знаете, что выбрать, скажите бармену, что любите."},"note":"Попросите авторский коктейль. Бармен с тележкой смешает при вас","o":39,"time":"21:00","title":"Лобби-бар: коктейли у миксолога"},"p38":{"day":"2026-10-19","done":false,"more":{"t":"В сентябре 2026 года дискотека на пляжной террасе шла каждый вечер после шоу. Ещё есть Disco Bar в главном корпусе, с 23:00 до 02:00, но не каждый день. Громкая музыка на территории до 23:00."},"note":"","o":40,"time":"22:30","title":"Дискотека на пляже"},"p39":{"day":"2026-10-20","done":false,"more":{"t":"Проверьте прогноз ещё раз. Если едете, отмените машину или предупредите водителя заранее, если день меняется."},"note":"Если сегодня пляжная погода, поменяйте Анталью на пасмурный день","o":41,"time":"07:00","title":"Рассвет на пирсе"},"p40":{"day":"2026-10-20","done":false,"more":{"t":"Возьмите с собой: паспорта (или их фото), лиры и доллары, пауэрбанк, воду, удобную обувь. Для крупных покупок заранее поменяйте $200–300 или больше: российские карты в ТЦ не работают."},"note":"","o":42,"time":"08:00","title":"Ранний завтрак"},"p41":{"day":"2026-10-20","done":false,"more":{"say":[["Lara'ya, Aşağı Düden Şelalesi'ne gidiyoruz. Ne kadar?","ларайа, ашаы дюден шелалесине гидийоруз. нэ кадар?","Нам в Лару, к нижнему водопаду Дюден. Сколько?"],["Taksimetreyi açar mısınız?","таксиметрэйи ачар мысыныз?","Включите счётчик, пожалуйста"]],"t":"Если через Pegas: водитель заберёт у лобби, программа и цена согласованы заранее.\n\nЕсли на такси: договоритесь о цене до посадки, назовите первую точку. До Лары ехать около 50 минут. По городу между точками удобно брать такси на 5–20 минут по счётчику, это обычно 300–700 лир.\n\nСохраните адреса точек в телефоне, и если водитель не понимает, покажите карту.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"],["Такси Богазкента, круглосуточно","+90 543 601 28 02"]]},"note":"Машина Pegas или такси. Первая точка — водопад Нижний Дюден","o":43,"time":"09:00","title":"Выезд в Анталью"},"p42":{"day":"2026-10-20","done":false,"more":{"pl":[{"a":"Fener Mah., Tekelioğlu Cad. No:55, Muratpaşa, Antalya","h":"Ежедневно 10:00–22:00","n":"TerraCity AVM","q":"TerraCity AVM Antalya","tel":"+90 242 318 18 18"}],"say":[["MarkAntalya AVM'ye, lütfen.","марк анталья а-вэ-мэйе, лютфен","В торговый центр MarkAntalya, пожалуйста"],["Taksimetreyi açar mısınız?","таксиметрэйи ачар мысыныз?","Включите счётчик, пожалуйста"]],"t":"Ищите бренды из списка «Что искать»: LC Waikiki, Koton, Mavi, DeFacto, Colin’s, косметику Flormar и Golden Rose. Какие магазины есть, смотрите на схеме у входа. Цены фиксированные, торговаться не нужно. Российские карты не работают, платите лирами.\n\nПерекусите на фуд-корте, а вечером будет рыба у гавани. Примерно в 13:15 берите такси до MarkAntalya, около 20 минут."},"note":"Большой ТЦ в Ларе. Перекус на фуд-корте","o":45,"time":"10:45","title":"TerraCity: шопинг и перекус"},"p43":{"day":"2026-10-20","done":false,"more":{"link":[["Маршрут на карте","https://www.google.com/maps/dir/?api=1&origin=MarkAntalya+AVM&destination=Kaleiçi+Yat+Limanı&waypoints=Saat+Kulesi+Antalya|Hadrian+Kapısı|Hıdırlık+Kulesi&travelmode=walking"]],"steps":["Площадь Калекапысы: часовая башня и минарет Йивли, символ города. 8 минут от MarkAntalya","Вдоль улицы Atatürk Caddesi к воротам Адриана, это римская арка II века","Через ворота в старый город по улице Hesapçı Sokak: особняки, лавки, кафе","Башня Хыдырлык и парк Караалиоглу над морем: вид на залив и горы","Спуск к старой гавани (Yat Limanı) к 17:00, на ужин"],"t":"Маршрут от MarkAntalya пешком, около двух часов с остановками:"},"note":"Часовая башня → ворота Адриана → башня Хыдырлык → гавань","o":47,"time":"15:00","title":"Прогулка по Калеичи"},"p44":{"day":"2026-10-20","done":false,"more":{"t":"Смотрите закат с террасы ресторана или с площадки у башни Хыдырлык. После заката быстро темнеет, и Калеичи красиво подсвечен."},"note":"Солнце садится около 18:15","o":49,"time":"18:10","title":"Закат над гаванью"},"p45":{"day":"2026-10-20","done":false,"more":{"say":[["Bize taksi çağırır mısınız?","бизе такси чаырыр мысыныз?","Вызовите нам такси, пожалуйста"],["Boğazkent'e, Kirman Belazur Otel. Taksimetreyle, lütfen.","богазкенте, кирман белазур отель. таксиметрэйле, лютфен","В Богазкент, отель Kirman Belazur. По счётчику, пожалуйста"],["Toplam ne kadar?","топлам нэ кадар?","Сколько всего?"]],"t":"Если вас везёт машина Pegas, встречайтесь в оговорённом месте. Если нет, попросите ресторан вызвать такси или возьмите такси у верхнего выхода из Калеичи, у часовой башни. До отеля около 50 км, договоритесь о цене до посадки.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"]]},"note":"Около часа. Ужин до 21:00, потом ночной буфет до 02:00","o":50,"time":"18:45","title":"Обратно в отель"},"p46":{"day":"2026-10-21","done":false,"more":{"t":"Займите шезлонги на пирсе и идите на завтрак. После рынка вернётесь сюда."},"note":"","o":51,"time":"07:00","title":"Рассвет и море с пирса"},"p47":{"day":"2026-10-21","done":false,"more":{"t":"Возьмите на рынок лиры мелкими купюрами и пакет. Если лир мало, по пути работает обменник Office Cash."},"note":"","o":52,"time":"08:00","title":"Завтрак"},"p48":{"day":"2026-10-21","done":false,"more":{"pl":[{"a":"Boğazkent Mah., 93. Sokak, Serik","h":"По средам, с утра","n":"Рынок Богазкента (Boğazkent Pazarı)","q":"Boğazkent Pazarı"},{"a":"Boğazkent Mah., Mehmet Akif Ersoy Cad. No:67, Serik","h":"С 08:30, есть банкомат. Часы в воскресенье не подтверждены","n":"Office Cash Money & Crypto Exchange","q":"Office Cash Money Exchange Boğazkent","tel":"+90 532 786 74 89"}],"say":[["Ne kadar?","нэ кадар?","Сколько стоит?"],["Çok pahalı. Son fiyat ne?","чок пахалы. сон фият нэ?","Слишком дорого. Какая последняя цена?"],["İki tane alırsam kaça olur?","ики тане алырсам кача олур?","А если возьму два, сколько?"],["Yarım kilo, lütfen.","ярым кило, лютфен","Полкило, пожалуйста"],["Bunu alıyorum.","буну алыйорум","Беру это"]],"t":"Рынок в центре Богазкента, на 93. Sokak. Как дойти, спросите на ресепшн. Идите к открытию, пока не жарко. Платят наличными лирами.\n\nТоргуйтесь: начинайте с половины названной цены. Если цена не устраивает, спокойно уходите — часто догоняют с лучшей. Что брать: гранаты и мандарины, специи, сухофрукты, орехи, оливковое мыло, пештемаль (лёгкое хлопковое полотенце)."},"note":"По средам. Фрукты, специи, орехи, пештемаль. Торгуйтесь","o":53,"time":"09:00","title":"Рынок в Богазкенте"},"p49":{"day":"2026-10-21","done":false,"more":{"t":"В Amfi Bar с 11:30 до 15:30 свежевыжатые соки: апельсиновый, морковный, гранатовый. Гёзлеме — тонкая лепёшка с сыром, шпинатом или картошкой. Её дают у бассейна и детского бара с 12:00."},"note":"Amfi Bar с 11:30, гёзлеме у детского бара","o":54,"time":"11:30","title":"Фреш-бар и гёзлеме"},"p50":{"day":"2026-10-21","done":false,"more":{"t":"Если нагулялись по рынку, в бассейне 16+ тихо и тепло, а бар прямо в воде."},"note":"Обед — на пирсе или в главном ресторане до 14:30","o":56,"time":"13:00","title":"Бассейн 16+ или пирс"},"p51":{"day":"2026-10-21","done":false,"more":{"t":"Десерты, торты, круассаны и зерновой кофе. Хорошее время: после 16:00 на пляже прохладнее, а до ужина ещё далеко."},"note":"Fine & Delicious Bakery, до 18:30","o":57,"time":"16:00","title":"Кофе и чизкейк в кондитерской"},"p52":{"day":"2026-10-21","done":false,"more":{"t":"Посмотрите в программе тему вечера. Если сегодня вечер морепродуктов или гала-ужин, это хороший повод нарядиться."},"note":"Главный ресторан, зал 16+","o":58,"time":"18:30","title":"Ужин"},"p53":{"day":"2026-10-21","done":false,"more":{"t":"Места лучше занять минут за 10–15. Программа меняется каждую неделю, так что шоу будет другое, не как в первый вечер."},"note":"","o":59,"time":"21:00","title":"Шоу в амфитеатре"},"p54":{"day":"2026-10-21","done":false,"more":{"t":"На пенную вечеринку берите купальник и шлёпанцы, одежду оставьте в номере. В прошлые октябри были Октоберфест, «гранатовая» и белая вечеринки, пенная с красками холи."},"note":"Пенная или тематическая, смотрите программу анимации","o":60,"time":"22:15","title":"Вечеринка по программе"},"p55":{"day":"2026-10-22","done":false,"more":{"t":"Стрельба из лука, пневматическая винтовка и дартс проходят по расписанию. Время спросите у аниматоров или посмотрите на доске у бассейна. Если павильон взят, сходите между купаниями."},"note":"Бесплатно, время по расписанию спортклуба","o":65,"time":"10:30","title":"Стрельба из лука"},"p56":{"day":"2026-10-22","done":false,"more":{"t":"Если взяли павильон, завтракайте спокойно: к 9:00 он ваш на весь день."},"note":"","o":63,"time":"08:15","title":"Завтрак"},"p57":{"day":"2026-10-22","done":false,"more":{"t":"Подойдите к бару на пирсе, назовите номер комнаты. Уточните, до какого часа павильон ваш, что входит, а что за доплату. Это хороший день, чтобы весь день не уходить с моря."},"note":"100 € на весь день: душ, холодильник, меню, шампанское","o":64,"time":"09:00","title":"Павильон на пирсе, если решили"},"p58":{"day":"2026-10-22","done":false,"more":{"t":"Ресторан на пляже работает по меню, поэтому можно весь день не уходить с моря. Если вы в павильоне, спросите, приносят ли туда еду из меню."},"note":"Заказ по меню","o":66,"time":"12:30","title":"Обед в ресторане на пляже"},"p59":{"day":"2026-10-22","done":false,"more":{"t":"Вечером накануне отъезда на стенде PEGAS Touristik в лобби вывешивают время, когда автобус заберёт от отеля, и время вылета. Сфотографируйте и запишите во «Инфо», раздел «Мои контакты».\n\nЕсли на стенде ничего нет, напишите гиду в WhatsApp или позвоните в офис Pegas. Номер рейса 2S-023.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"]]},"note":"Стенд PEGAS в лобби, вечером","o":67,"time":"18:00","title":"Узнать время трансфера"},"p60":{"day":"2026-10-22","done":false,"more":{"say":[["Late check-out tomorrow until 3:15 pm, please. How much is it?","лейт чек-аут тумороу антил сри фифтин пи-эм, плиз. хау мач из ит?","Поздний выезд завтра до 15:15, пожалуйста. Сколько стоит?"]],"t":"Назовите время трансфера и попросите выезд на 30–45 минут раньше. Оплата по часам, поэтому цену спросите до того, как соглашаться.\n\nЕсли дорого, есть бесплатный вариант: сдать номер в 12:00, чемоданы в камеру хранения, а принять душ и переодеться в SPA."},"note":"Оплата по часам, до времени трансфера","o":68,"time":"18:15","title":"Ресепшн: поздний выезд на 23-е"},"p61":{"day":"2026-10-22","done":false,"more":{"t":"Если в программе на сегодня гала-ужин или вечер морепродуктов, всё совпало. Поблагодарите официантов, которые обслуживали вас всю неделю: чаевые $5–10 будут уместны."},"note":"Зал 16+ в главном ресторане","o":69,"time":"19:00","title":"Прощальный ужин"},"p62":{"day":"2026-10-22","done":false,"more":{"t":"Шоу около 21:00, потом дискотека на пляжной террасе. Если завтра рано на пирс, не засиживайтесь, но последний вечер того стоит."},"note":"Последний вечер","o":71,"time":"21:00","title":"Шоу, потом дискотека"},"p63":{"day":"2026-10-23","done":false,"more":{"t":"Солнце встаёт около 07:10. Хорошее время для последних фото."},"note":"","o":72,"time":"07:00","title":"Последний рассвет на пирсе"},"p64":{"day":"2026-10-23","done":false,"more":{"t":"Не торопитесь: номер сдавать только после обеда. Браслеты действуют до выезда."},"note":"","o":73,"time":"08:00","title":"Завтрак"},"p65":{"day":"2026-10-23","done":false,"more":{"t":"Купальники развесьте на балконе к 11:00, к сборам они подсохнут. Если остались мокрыми, упакуйте их в отдельный пакет."},"note":"Последнее купание до 11:00, чтобы купальники успели высохнуть","o":74,"time":"09:00","title":"Море и пирс"},"p66":{"day":"2026-10-23","done":false,"more":{"steps":["Проверьте сейф: паспорта, доллары, лиры","Зарядки из розеток, пауэрбанк в ручную кладь","Жидкости больше 100 мл, оливковое масло и специи сдайте в багаж","Взвесьте чемоданы, если есть весы на ресепшн. Норма указана в квитанции","Оставьте горничной $5–10 на подушке с запиской «Thank you»"]},"note":"В ручную кладь: паспорта, зарядки, беруши","o":75,"time":"11:30","title":"Собрать чемоданы"},"p67":{"day":"2026-10-23","done":false,"more":{"t":"Обед в главном ресторане до 14:30. Браслеты действуют до выезда, так что можно спокойно пообедать."},"note":"","o":76,"time":"12:30","title":"Обед"},"p68":{"day":"2026-10-23","done":false,"more":{"t":"Если выбрали хаммам, после него можно сразу принять душ в SPA. Это удобно, если поздний выезд не взяли."},"note":"","o":77,"time":"14:00","title":"Бассейн 16+ или хаммам напоследок"},"p69":{"day":"2026-10-23","done":false,"more":{"t":"На ресепшн сдайте карты-ключи и полотенечные карточки: за несданные могут взять деньги. Спросите, есть ли что оплатить: поздний выезд или рум-сервис. Проверьте, что паспорта с собой."},"note":"Сдать ключи и полотенечные карточки","o":78,"time":"15:15","title":"Душ и выезд из номера"},"p70":{"day":"2026-10-23","done":false,"more":{"t":"Будьте в лобби с чемоданами за 10 минут до времени трансфера. Автобус собирает туристов из нескольких отелей, до аэропорта 45–60 минут. Если автобуса нет через 15 минут после назначенного времени, звоните в Pegas.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"]]},"note":"Точное время на стенде PEGAS","o":79,"time":"16:00","title":"Трансфер в аэропорт"},"p71":{"day":"2026-10-23","done":false,"more":{"t":"Трансфер довезёт до нужного терминала. Стойку регистрации ищите на табло по номеру рейса 2S-023. Если зарегистрировались онлайн, вам нужна стойка сдачи багажа.\n\nОстаток лир потратьте в Duty Free или в кафе: обменивать обратно невыгодно. На паспортном контроле нужны только паспорта."},"note":"Регистрация на 2S-023, Duty Free, потратить остаток лир","o":80,"time":"17:00","title":"Аэропорт Антальи"},"p72":{"day":"2026-10-23","done":false,"more":{"link":[["Табло аэропорта Казани","https://kzn.ru/"]],"t":"Перед вылетом напишите встречающим номер рейса 2S-023 и время прилёта из квитанции. Следить за рейсом можно на табло kzn.ru. Еда на борту только за наличные."},"note":"Прилёт в Казань около полуночи, вас встретят","o":81,"time":"20:00","title":"Вылет AYT → KZN"},"p73":{"day":"2026-10-16","done":false,"more":{"steps":["Маршрутная квитанция: время вылета, номер брони, норма багажа","Ваучер в отель Kirman Belazur","Страховой полис на обоих","Всё сохранить в телефон и сделать скриншоты"],"t":"За 1–2 дня до вылета документы появятся в личном кабинете Pegas или придут от турагента. Скачайте всё в телефон и сделайте скриншоты: в роуминге интернет бывает медленным, а ваучер спросят в аэропорту Антальи и на ресепшн.\n\nСтраховка в пакете Pegas обычно от ЕВРОИНС. В полисе указаны телефоны ассистанса для Турции. Перепишите номер полиса и телефон во вкладку «Инфо», раздел «Мои контакты».\n\nЕсли кто-то заболеет, сначала позвоните в ассистанс: они скажут, в какую клинику ехать, и оплатят лечение по полису. Если пойти к врачу без звонка, могут не возместить."},"note":"Ваучер, маршрутная квитанция, страховой полис","o":0,"time":"12:00","title":"Скачать документы Pegas"},"p74":{"day":"2026-10-16","done":false,"more":{"t":"Подключите у оператора пакет интернета для Турции. В настройках телефона включите «Роуминг данных», иначе после посадки интернета не будет.\n\nОбычные звонки в роуминге дорогие. Гиду, отелю и таксистам удобнее писать и звонить в WhatsApp: в отеле по Wi-Fi, в городе через пакет.\n\nСкачайте офлайн-карту района Белек, Богазкент и Анталья в Google Maps или Яндекс Картах. Она пригодится 19 и 20 октября, если интернет пропадёт."},"note":"Звонки дорогие, пишите и звоните через WhatsApp","o":1,"time":"12:30","title":"Роуминг: подключить интернет на Турцию"},"p75":{"day":"2026-10-17","done":false,"more":{"t":"В лобби обычно висит информационная доска PEGAS Touristik. На ней дни и часы, когда гид бывает в отеле, и его телефон. Вечером накануне отъезда там же вывешивают время обратного трансфера. Сфотографируйте доску и запишите телефон гида во «Инфо», раздел «Мои контакты».\n\nНа встрече с гидом будут предлагать экскурсии. Покупать не обязательно, можно подойти только за контактами. Заодно спросите цену машины в Анталью на день: она пригодится 20 октября.","tel":[["Pegas в Анталье, круглосуточно","+90 242 310 54 00"]]},"note":"Сфотографировать: дни приезда гида и его телефон","o":13,"time":"10:45","title":"Стенд PEGAS в лобби"},"p76":{"day":"2026-10-19","done":false,"more":{"pl":[{"a":"Boğazkent Mah., Mehmet Akif Ersoy Cad. No:67, Serik","h":"С 08:30, есть банкомат. Часы в воскресенье не подтверждены","n":"Office Cash Money & Crypto Exchange","q":"Office Cash Money Exchange Boğazkent","tel":"+90 532 786 74 89"}],"say":[["Dolar bozdurmak istiyorum. Kur ne kadar?","долар боздурмак истийорум. кур нэ кадар?","Хочу поменять доллары. Какой курс?"]],"t":"Для Аспендоса нужно около 1 800–2 000 лир на двоих за вход, плюс деньги на такси. Меняйте $100–200. Лиры пригодятся и на рынке в среду.\n\nСмотрите колонку Alış: по этому курсу у вас покупают доллары. Комиссии обычно нет. Пересчитайте деньги у окошка. Мятые и надорванные купюры могут не принять."},"note":"Если вчера не получилось. Office Cash открывается в 08:30","o":33,"time":"08:30","title":"Обмен валюты в Богазкенте"},"p77":{"day":"2026-10-20","done":false,"more":{"pl":[{"a":"Çağlayan Mah., Muratpaşa, Antalya","h":"Круглосуточно, бесплатно","n":"Aşağı Düden Şelalesi, Düden Park","q":"Aşağı Düden Şelalesi"}],"t":"Водопад падает с обрыва прямо в море. Смотрят его с площадок в парке Düden Park в районе Лара. Вход свободный, открыто круглосуточно. Пройдитесь вдоль обрыва: в солнечный день над водой бывает радуга. Рядом кафе и туалеты.\n\nДо TerraCity отсюда около 10 минут на такси."},"note":"Бесплатно, 30–40 минут","o":44,"time":"10:00","title":"Водопад Нижний Дюден"},"p78":{"day":"2026-10-20","done":false,"more":{"pl":[{"a":"Tahılpazarı Mah., Kazım Özalp Cad. No:84, Muratpaşa, Antalya","h":"Ежедневно 10:00–23:00","n":"MarkAntalya AVM","q":"MarkAntalya AVM","tel":"+90 242 244 66 66"}],"t":"ТЦ поменьше, но в центре: LC Waikiki, DeFacto, Gratis (косметика), MediaMarkt. Удобно докупить то, что не нашли в TerraCity. Около 15:00 выходите пешком в сторону часовой башни — начало прогулки по Калеичи."},"note":"ТЦ в центре, до Калеичи 10 минут пешком","o":46,"time":"13:30","title":"MarkAntalya"},"p79":{"day":"2026-10-20","done":false,"more":{"pl":[{"a":"Selçuk Mah., İskele Cad. No:75, Kaleiçi Yat Limanı, Muratpaşa","h":"11:00–23:00","n":"Arma Restaurant","q":"Arma Restaurant Kaleiçi","tel":"+90 242 244 97 10"},{"a":"Kılınçarslan Mah., Hıdırlık Sok. 19/1, Muratpaşa","h":"Примерно 11:00–00:00","n":"Balıkçı Meyhanesi Kaleiçi","q":"Balıkçı Meyhanesi Kaleiçi","tel":"+90 542 220 09 68"}],"say":[["Deniz manzaralı bir masa, iki kişi, saat beşte.","дениз манзаралы бир маса, ики киши, саат беште","Столик с видом на море, на двоих, в 17:00"],["Bu balığın porsiyonu ne kadar? Kilosu ne kadar?","бу балыын порсийону нэ кадар? килосу нэ кадар?","Сколько стоит порция этой рыбы? А за килограмм?"],["Hesap, lütfen.","хесап, лютфен","Счёт, пожалуйста"]],"t":"Arma — ресторан в историческом здании прямо над гаванью: вид на яхты и закат, средиземноморская кухня, много рыбы. Дорого, премиум-сегмент.\n\nBalıkçı Meyhanesi Kaleiçi — рыбная таверна у башни Хыдырлык, в 5 минутах от гавани. Одна из самых высоко оценённых в городе, около 4,9 на Tripadvisor. Дешевле и оживлённее, бывает живая музыка.\n\nПозвоните заранее или утром из отеля и попросите столик с видом на 17:00. Рыбу часто продают на вес: перед заказом спросите цену порции или килограмма. Проверьте счёт на лишние позиции: хлеб, закуски, сервисный сбор. Карты российских банков не пройдут, платите лирами."},"note":"Arma над гаванью или Balıkçı Meyhanesi в 5 минутах","o":48,"time":"17:00","title":"Ужин с рыбой у старой гавани"},"p80":{"day":"2026-10-21","done":false,"more":{"say":[["How much is a pavilion for tomorrow? Can we pay in dollars?","хау мач из э павилион фо тумороу? кэн уи пэй ин доларз?","Сколько стоит павильон на завтра? Можно заплатить долларами?"],["How much is a late check-out on the 23rd?","хау мач из э лейт чек-аут он зэ твенти-сёрд?","Сколько стоит поздний выезд 23-го?"]],"t":"Подойдите к бару на пирсе или в Guest Relations. Узнайте цену на завтра, что входит и можно ли платить долларами. По отзывам 2025 года — 100 € в день: свой душ, холодильник, лежаки с матрасами, отдельное меню, шампанское и фрукты. Со стороны павильонов удобные ступени в воду.\n\nЗаодно спросите на ресепшн цену позднего выезда на 23-е, чтобы завтра не удивляться."},"note":"Если берёте, бронируйте сегодня","o":55,"time":"12:00","title":"Решить про павильон на завтра"},"p82":{"day":"2026-10-22","done":false,"more":{"t":"Если взяли павильон, вещи можно сразу оставить там после 9:00. Если нет, займите шезлонги как обычно."},"note":"","o":61,"time":"07:00","title":"Рассвет и море с пирса"},"p83":{"day":"2026-10-22","done":false,"more":{"link":[["Онлайн-регистрация Southwind","https://southwindairlines.com/ru/check-in"]],"t":"Для рейса в 20:00 онлайн-регистрация открыта с 20:00 22-го до 17:00 23-го. Можно сделать прямо за ужином. Понадобятся код бронирования и фамилия латиницей из маршрутной квитанции. Посадочные сохраните скриншотом."},"note":"Открывается за 24 часа, закрывается за 3 часа до вылета","o":70,"time":"20:00","title":"Онлайн-регистрация на рейс 2S-023"}}},"packing":{"items":{"k01":{"cat":"docs","done":false,"hint":"Действуют минимум 150 дней после въезда","list":"pack","o":0,"text":"Загранпаспорта"},"k02":{"cat":"docs","done":false,"hint":"","list":"pack","o":1,"text":"Ваучер на отель и трансфер"},"k03":{"cat":"docs","done":false,"hint":"","list":"pack","o":2,"text":"Электронные билеты"},"k04":{"cat":"docs","done":false,"hint":"Телефон ассистанса запишите во вкладке «Инфо»","list":"pack","o":3,"text":"Медицинская страховка"},"k05":{"cat":"docs","done":false,"hint":"","list":"pack","o":4,"text":"Фото документов в телефоне"},"k06":{"cat":"docs","done":false,"hint":"","list":"pack","o":5,"text":"Российские паспорта"},"k07":{"cat":"money","done":false,"hint":"Целые купюры нового образца","list":"pack","o":6,"text":"Доллары наличными"},"k08":{"cat":"money","done":false,"hint":"$1–5","list":"pack","o":7,"text":"Мелкие доллары на чаевые"},"k09":{"cat":"money","done":false,"hint":"На мелочи в аэропорту Казани","list":"pack","o":8,"text":"Немного рублей наличными"},"k10":{"cat":"carry","done":false,"hint":"","list":"pack","o":9,"text":"Купальники"},"k11":{"cat":"carry","done":false,"hint":"","list":"pack","o":10,"text":"Шлёпанцы"},"k12":{"cat":"carry","done":false,"hint":"","list":"pack","o":11,"text":"Солнцезащитный крем до 100 мл"},"k13":{"cat":"carry","done":false,"hint":"","list":"pack","o":12,"text":"Лёгкая сменная одежда"},"k14":{"cat":"carry","done":false,"hint":"","list":"pack","o":13,"text":"Зубные щётки и мини-косметичка"},"k15":{"cat":"carry","done":false,"hint":"","list":"pack","o":14,"text":"Солнечные очки и головные уборы"},"k16":{"cat":"carry","done":false,"hint":"Только в ручной клади","list":"pack","o":15,"text":"Пауэрбанк"},"k17":{"cat":"carry","done":false,"hint":"","list":"pack","o":16,"text":"Лекарства на первые сутки"},"k18":{"cat":"clothes","done":false,"hint":"+25…27 °C","list":"pack","o":17,"text":"Лёгкая одежда на день"},"k19":{"cat":"clothes","done":false,"hint":"+15…17 °C","list":"pack","o":18,"text":"Кофта или ветровка на вечер"},"k20":{"cat":"clothes","done":false,"hint":"В пляжной одежде в ресторан не пускают","list":"pack","o":19,"text":"Брюки и рубашка на ужин в а-ля карт"},"k21":{"cat":"clothes","done":false,"hint":"","list":"pack","o":20,"text":"Вечерний наряд"},"k22":{"cat":"clothes","done":false,"hint":"","list":"pack","o":21,"text":"Удобная обувь для Антальи и Аспендоса"},"k23":{"cat":"beach","done":false,"hint":"","list":"pack","o":22,"text":"Второй купальник"},"k24":{"cat":"beach","done":false,"hint":"","list":"pack","o":23,"text":"Крем после загара"},"k25":{"cat":"beach","done":false,"hint":"","list":"pack","o":24,"text":"Пляжная сумка"},"k26":{"cat":"beach","done":false,"hint":"","list":"pack","o":25,"text":"Тапочки для бассейна и SPA"},"k27":{"cat":"meds","done":false,"hint":"","list":"pack","o":26,"text":"Обезболивающее и жаропонижающее"},"k28":{"cat":"meds","done":false,"hint":"","list":"pack","o":27,"text":"Средство от расстройства желудка и сорбент"},"k29":{"cat":"meds","done":false,"hint":"","list":"pack","o":28,"text":"Антигистаминное"},"k30":{"cat":"meds","done":false,"hint":"","list":"pack","o":29,"text":"Пластыри"},"k31":{"cat":"meds","done":false,"hint":"Для автобуса-трансфера","list":"pack","o":30,"text":"Средство от укачивания"},"k32":{"cat":"tech","done":false,"hint":"","list":"pack","o":31,"text":"Телефоны и зарядки"},"k33":{"cat":"tech","done":false,"hint":"Подключить до вылета и включить «Роуминг данных»","list":"pack","o":32,"text":"Роуминг: пакет интернета на Турцию"},"k34":{"cat":"tech","done":false,"hint":"","list":"pack","o":33,"text":"Наушники для перелёта"},"k35":{"cat":"home","done":false,"hint":"","list":"pack","o":34,"text":"Выключить электроприборы"},"k36":{"cat":"home","done":false,"hint":"","list":"pack","o":35,"text":"Перекрыть воду"},"k37":{"cat":"home","done":false,"hint":"","list":"pack","o":36,"text":"Вынести мусор и убрать скоропортящееся"},"k38":{"cat":"home","done":false,"hint":"","list":"pack","o":37,"text":"Закрыть окна"},"k39":{"cat":"food","done":false,"hint":"","list":"shop","o":38,"text":"Лукум и пахлава"},"k40":{"cat":"food","done":false,"hint":"","list":"shop","o":39,"text":"Турецкий кофе"},"k41":{"cat":"food","done":false,"hint":"","list":"shop","o":40,"text":"Чай Çaykur"},"k42":{"cat":"food","done":false,"hint":"","list":"shop","o":41,"text":"Специи с рынка"},"k43":{"cat":"food","done":false,"hint":"","list":"shop","o":42,"text":"Сухофрукты и орехи"},"k44":{"cat":"home","done":false,"hint":"","list":"shop","o":43,"text":"Пештемаль, пляжное полотенце"},"k45":{"cat":"home","done":false,"hint":"","list":"shop","o":44,"text":"Оливковое мыло"},"k46":{"cat":"clothes","done":false,"hint":"","list":"shop","o":45,"text":"Одежда в LC Waikiki, Koton или Mavi"},"k47":{"cat":"gifts","done":false,"hint":"","list":"shop","o":46,"text":"Магнит на холодильник"},"k48":{"cat":"gifts","done":false,"hint":"","list":"shop","o":47,"text":"Сувениры родным"},"k49":{"cat":"carry","done":false,"hint":"Пригодятся в ночном рейсе и в номере: в 5 утра бывает слышно мечеть","list":"pack","o":16.5,"text":"Беруши и маска для сна"},"k50":{"cat":"beach","done":false,"hint":"Вход каменистый и крутой, это советуют почти все отзывы","list":"pack","o":25.5,"text":"Обувь для входа в море"}}},"settings":{"ratesDate":"30.09.2026","usdRub":84.4,"usdTry":48.8},"notes":{"tohot":"Pegas, офис в Анталье, круглосуточно: +90 242 310 54 00"}}</script>
+<script type="application/json" id="tpl">
+{"plan":[["2026-10-16","18:00","Онлайн-регистрация на рейс","Если авиакомпания её даёт: ссылка обычно в билете или письме"],
+["2026-10-16","20:00","Финальные сборы по чек-листу","Паспорта, ваучеры, доллары, зарядки, обувь для моря"],
+["2026-10-16","21:45","Такси в аэропорт Казани","Закажите заранее"],
+["2026-10-16","23:00","Аэропорт: багаж и паспортный контроль","Регистрация закрывается примерно за 40 минут до вылета"],
+["2026-10-17","02:00","Вылет KZN → AYT","Около 4 часов в пути, разницы во времени нет. Беруши и маска помогут поспать"],
+["2026-10-17","06:00","Прилёт в Анталью","Паспортный контроль и багаж"],
+["2026-10-17","07:00","Найти гида туроператора и автобус","До Богазкента около часа с заездами в другие отели"],
+["2026-10-17","08:30","Регистрация в отеле","Попросите тихий номер: корпус 8 (H) или E, не на нижних этажах, окнами на бассейн и море. Браслеты дадут сразу"],
+["2026-10-17","09:00","Завтрак и переодеться","Раздевалка в SPA, чемоданы в камеру хранения"],
+["2026-10-17","10:00","Стойка а-ля карт: бронь итальянского","Ваш бесплатный ужин, лучше на понедельник, 19 октября. Если бронируют только накануне, приходите 18-го с утра"],
+["2026-10-17","10:30","Guest Relations","Сохранить их WhatsApp, взять программу анимации на неделю, спросить про тематические вечера"],
+["2026-10-17","11:00","Первый пляж и пирс","Посмотрите павильоны на пирсе и спросите цену"],
+["2026-10-17","13:00","Заселение и проверка номера","Запах, кондиционер, матрас, бельё. Если что-то не так, сразу просите другой номер. Потом сон после ночного рейса"],
+["2026-10-17","18:30","Ужин в зале 16+","Главный ресторан. Рыбу выбираете сами, её пожарят при вас"],
+["2026-10-17","20:30","Вечернее шоу в амфитеатре","В первый вечер недолго, завтра ранний подъём"],
+["2026-10-17","21:30","Заказать Wake Up Call на 06:45","Утром принесут кофе и круассаны"],
+["2026-10-18","06:45","Кофе и круассаны в номер","Wake Up Call"],
+["2026-10-18","07:00","Рассвет на пирсе","Солнце встаёт около 7:05. Заодно займите лучшие шезлонги"],
+["2026-10-18","08:00","Завтрак","Омлет на заказ, симиты с каймаком и мёдом"],
+["2026-10-18","09:00","Море с пирса","По лестнице в воду удобнее, чем с каменистого берега. Есть зона для прыжков"],
+["2026-10-18","11:00","Прогулка у отеля: обмен валюты","Обменник и аптеки рядом. Поменять $100–200 на лиры"],
+["2026-10-18","12:00","Записаться на боулинг на завтра","Игровой клуб, бронь за день, с 12:00"],
+["2026-10-18","12:30","Обед на пирсе","Курица, картошка фри, мороженое"],
+["2026-10-18","14:00","Бассейн 16+ с баром в воде","Самая тёплая вода в отеле, без детей"],
+["2026-10-18","16:30","Хаммам, сауна и снежный фонтан","Бесплатно, в SPA"],
+["2026-10-18","18:30","Тематический ужин","Главный ресторан, зал 16+"],
+["2026-10-18","19:30","Sunset Bar: живая музыка","В воскресенье у аниматоров выходной, вечер тихий"],
+["2026-10-18","21:00","Выбрать день для Антальи","Смотрите прогноз: берите самый пасмурный или ветреный день"],
+["2026-10-19","07:00","Рассвет на пирсе и купание",""],
+["2026-10-19","07:30","Утренняя зарядка или йога","Расписание спортклуба объявляют у бассейна"],
+["2026-10-19","08:15","Завтрак",""],
+["2026-10-19","09:00","Аспендос","Такси около 20 минут, по счётчику. Вход около 15 €, открыт с 8:00. Вернётесь к обеду"],
+["2026-10-19","12:30","Обед в Food Court",""],
+["2026-10-19","14:00","Пляж и пирс",""],
+["2026-10-19","17:30","Боулинг","Бесплатно, по брони со вчерашнего дня"],
+["2026-10-19","19:00","Ужин в итальянском а-ля карт","Бесплатный ужин. Советуют каре ягнёнка. Мужчине лучше в брюках"],
+["2026-10-19","21:00","Лобби-бар: коктейли у миксолога","Попросите авторский коктейль. Бармен с тележкой смешает при вас"],
+["2026-10-19","22:30","Дискотека на пляже",""],
+["2026-10-20","07:00","Рассвет на пирсе","Если сегодня пляжная погода, поменяйте Анталью на пасмурный день"],
+["2026-10-20","08:00","Ранний завтрак",""],
+["2026-10-20","09:00","Такси в Анталью","Около часа. Попросите счётчик или договоритесь о цене заранее"],
+["2026-10-20","10:00","Шопинг: TerraCity или MarkAntalya","LC Waikiki, Koton, Mavi, Flormar, кофе Kurukahveci Mehmet Efendi"],
+["2026-10-20","13:30","Обед и прогулка по Калеичи","Ворота Адриана, минарет Йивли, часовая башня"],
+["2026-10-20","17:30","Закат у старой гавани","Солнце садится около 18:15"],
+["2026-10-20","19:00","Обратно в отель","Ужин до 21:00, потом ночной буфет до 02:00"],
+["2026-10-21","07:00","Рассвет и море с пирса",""],
+["2026-10-21","08:00","Завтрак",""],
+["2026-10-21","09:00","Рынок в Богазкенте","По средам. Фрукты, специи, орехи, пештемаль. Торгуйтесь"],
+["2026-10-21","11:30","Фреш-бар и гёзлеме","Amfi Bar с 11:30, гёзлеме у детского бара"],
+["2026-10-21","13:00","Бассейн 16+ или пирс",""],
+["2026-10-21","16:00","Кофе и чизкейк в кондитерской","Кондитерская открыта до 18:30"],
+["2026-10-21","18:30","Ужин",""],
+["2026-10-21","20:30","Шоу в амфитеатре",""],
+["2026-10-21","22:00","Вечеринка по программе","Пенная или тематическая, смотрите программу анимации"],
+["2026-10-22","07:00","Стрельба из лука или йога","Время узнайте у аниматоров"],
+["2026-10-22","08:00","Завтрак",""],
+["2026-10-22","09:00","Павильон на пирсе, если решили","100 € на весь день: душ, холодильник, меню, шампанское. Бронируйте накануне"],
+["2026-10-22","12:30","Обед в ресторане на пляже","Заказ по меню"],
+["2026-10-22","17:00","Уточнить у гида время трансфера","Запишите во вкладке «Инфо»"],
+["2026-10-22","18:00","Ресепшн: поздний выезд на 23-е","Оплата по часам, до времени трансфера"],
+["2026-10-22","18:30","Прощальный ужин",""],
+["2026-10-22","20:30","Шоу, потом дискотека",""],
+["2026-10-23","07:00","Последний рассвет на пирсе",""],
+["2026-10-23","08:00","Завтрак",""],
+["2026-10-23","09:00","Море и пирс",""],
+["2026-10-23","11:30","Собрать чемоданы","В ручную кладь: паспорта, зарядки, беруши"],
+["2026-10-23","12:30","Обед",""],
+["2026-10-23","14:00","Бассейн 16+ или хаммам напоследок",""],
+["2026-10-23","15:15","Душ и выезд из номера","Поздний выезд до трансфера"],
+["2026-10-23","16:00","Трансфер в аэропорт","Точное время скажет гид"],
+["2026-10-23","17:00","Аэропорт Антальи","Регистрация, Duty Free, потратить остаток лир"],
+["2026-10-23","20:00","Вылет AYT → KZN","Прилёт в Казань около полуночи"]],"packing":[["pack","docs","Загранпаспорта","Действуют минимум 150 дней после въезда"],
+["pack","docs","Ваучер на отель и трансфер",""],
+["pack","docs","Электронные билеты",""],
+["pack","docs","Медицинская страховка","Телефон ассистанса запишите во вкладке «Инфо»"],
+["pack","docs","Фото документов в телефоне",""],
+["pack","docs","Российские паспорта",""],
+["pack","money","Доллары наличными","Целые купюры нового образца"],
+["pack","money","Мелкие доллары на чаевые","$1–5"],
+["pack","money","Рубли на такси до аэропорта и обратно",""],
+["pack","carry","Купальники",""],
+["pack","carry","Шлёпанцы",""],
+["pack","carry","Солнцезащитный крем до 100 мл",""],
+["pack","carry","Лёгкая сменная одежда",""],
+["pack","carry","Зубные щётки и мини-косметичка",""],
+["pack","carry","Солнечные очки и головные уборы",""],
+["pack","carry","Пауэрбанк","Только в ручной клади"],
+["pack","carry","Лекарства на первые сутки",""],
+["pack","carry","Беруши и маска для сна","Пригодятся в ночном рейсе и в номере: в 5 утра бывает слышно мечеть"],
+["pack","clothes","Лёгкая одежда на день","+25…27 °C"],
+["pack","clothes","Кофта или ветровка на вечер","+15…17 °C"],
+["pack","clothes","Брюки и рубашка на ужин в а-ля карт","В пляжной одежде в ресторан не пускают"],
+["pack","clothes","Вечерний наряд",""],
+["pack","clothes","Удобная обувь для Антальи и Аспендоса",""],
+["pack","beach","Второй купальник",""],
+["pack","beach","Крем после загара",""],
+["pack","beach","Пляжная сумка",""],
+["pack","beach","Тапочки для бассейна и SPA",""],
+["pack","beach","Обувь для входа в море","Вход каменистый и крутой, это советуют почти все отзывы"],
+["pack","meds","Обезболивающее и жаропонижающее",""],
+["pack","meds","Средство от расстройства желудка и сорбент",""],
+["pack","meds","Антигистаминное",""],
+["pack","meds","Пластыри",""],
+["pack","meds","Средство от укачивания","Для автобуса-трансфера"],
+["pack","tech","Телефоны и зарядки",""],
+["pack","tech","Роуминг или туристическая eSIM",""],
+["pack","tech","Наушники для перелёта",""],
+["pack","home","Выключить электроприборы",""],
+["pack","home","Перекрыть воду",""],
+["pack","home","Вынести мусор и убрать скоропортящееся",""],
+["pack","home","Закрыть окна",""],
+["shop","food","Лукум и пахлава",""],
+["shop","food","Турецкий кофе",""],
+["shop","food","Чай Çaykur",""],
+["shop","food","Специи с рынка",""],
+["shop","food","Сухофрукты и орехи",""],
+["shop","home","Пештемаль, пляжное полотенце",""],
+["shop","home","Оливковое мыло",""],
+["shop","clothes","Одежда в LC Waikiki, Koton или Mavi",""],
+["shop","gifts","Магнит на холодильник",""],
+["shop","gifts","Сувениры родным",""]]}
+</script>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- поездка: всё время по UTC+3 (Казань = Турция) ---------- */
+const OFF=3*3600e3;
+const T_DEP=Date.UTC(2026,9,16,23,0);   // 17.10 02:00
+const T_ARR=Date.UTC(2026,9,17,3,0);    // 17.10 06:00
+const T_RET=Date.UTC(2026,9,23,17,0);   // 23.10 20:00
+const T_HOME=T_RET+4*3600e3;
+const DAYS=[
+  {k:'2026-10-16',d:16,wd:'Пт',wf:'Пятница',tag:'Вылет из Казани',facts:['Рейс 2S-024 в 02:00 ночи','Онлайн-регистрация до 23:00','В аэропорту к 23:00']},
+  {k:'2026-10-17',d:17,wd:'Сб',wf:'Суббота',tag:'День 1 · прилёт',facts:['Прилёт в 06:00','Стойка PEGAS после багажа','Номер обычно к 11:00–14:00','Бронь а-ля карт']},
+  {k:'2026-10-18',d:18,wd:'Вс',wf:'Воскресенье',tag:'День 2',facts:['Рассвет ≈07:05','У аниматоров выходной','Обменники могут не работать']},
+  {k:'2026-10-19',d:19,wd:'Пн',wf:'Понедельник',tag:'День 3',facts:['Обмен в 08:30','Аспендос с утра','Итальянский а-ля карт']},
+  {k:'2026-10-20',d:20,wd:'Вт',wf:'Вторник',tag:'День 4',facts:['Анталья, если погода не пляжная','Закат ≈18:15']},
+  {k:'2026-10-21',d:21,wd:'Ср',wf:'Среда',tag:'День 5',facts:['По средам рынок в Богазкенте','Решить про павильон']},
+  {k:'2026-10-22',d:22,wd:'Чт',wf:'Четверг',tag:'День 6',facts:['Время трансфера на стенде PEGAS','Поздний выезд','Онлайн-регистрация с 20:00']},
+  {k:'2026-10-23',d:23,wd:'Пт',wf:'Пятница',tag:'День 7 · отъезд',facts:['Поздний выезд до трансфера','Рейс 2S-023 в 20:00']}
+];
+const CAT_PACK={docs:'Документы',money:'Деньги',carry:'Ручная кладь на утро прилёта',clothes:'Одежда',beach:'Пляж и SPA',meds:'Аптечка',tech:'Техника и связь',home:'Перед выходом из дома'};
+const CAT_SHOP={food:'Еда и сладости',home:'Для дома',clothes:'Одежда',gifts:'Подарки'};
+const CAT_EXP={spa:'SPA и массаж',shop:'Покупки',taxi:'Такси и дорога',food:'Кафе вне отеля',tips:'Чаевые',fun:'Развлечения',other:'Другое'};
+const DEF_RATES={usdTry:48.8,usdRub:84.4,eurUsd:1.14,date:'30.09.2026'};
+const SYM={TRY:'₺',USD:'$',RUB:'₽',EUR:'€'};
+const CUR_NAME={TRY:'лиры',USD:'доллары',RUB:'рубли',EUR:'евро'};
+const TPL=JSON.parse($('#tpl').textContent);
+
+const PHRASES=[
+  ['Вежливость',[
+    ['Merhaba','мерхаба','Здравствуйте'],['Günaydın','гюнайдын','Доброе утро'],['İyi akşamlar','ийи акшамлар','Добрый вечер'],
+    ['Teşekkür ederim','тешеккюр эдерим','Спасибо'],['Sağ olun','саа олун','Спасибо, коротко'],['Lütfen','лютфен','Пожалуйста, при просьбе'],
+    ['Rica ederim','риджа эдерим','Не за что'],['Evet / Hayır','эвет / хайыр','Да / Нет'],['Hoşça kalın','хошча калын','До свидания']
+  ]],
+  ['Покупки и рынок',[
+    ['Ne kadar?','нэ кадар?','Сколько стоит?'],['Çok pahalı','чок пахалы','Слишком дорого'],['İndirim var mı?','индирим вар мы?','Есть скидка?'],
+    ['Son fiyat ne?','сон фият нэ?','Какая последняя цена?'],['Sadece bakıyorum','садэджэ бакыйорум','Я просто смотрю'],['Bunu alıyorum','буну алыйорум','Беру это'],
+    ['Poşet lütfen','пошет лютфен','Пакет, пожалуйста']
+  ]],
+  ['Кафе и ресторан',[
+    ['Hesap, lütfen','хесап лютфен','Счёт, пожалуйста'],['Menü alabilir miyim?','меню алабилир мийим?','Можно меню?'],['Su, lütfen','су лютфен','Воды, пожалуйста'],
+    ['Çay / Türk kahvesi','чай / тюрк кахвеси','Чай / турецкий кофе'],['Acı olmasın','аджы олмасын','Не острое, пожалуйста'],['Çok lezzetli','чок лэззэтли','Очень вкусно']
+  ]],
+  ['Такси и дорога',[
+    ['Kirman Belazur Otel, Boğazkent','кирман белазур отель, богазкент','Адрес отеля для таксиста'],['Taksimetreyi açar mısınız?','таксиметрэйи ачар мысыныз?','Включите счётчик, пожалуйста'],
+    ['Burada durun','бурада дурун','Остановитесь здесь'],['Nerede?','нэрэдэ?','Где?'],['Tuvalet nerede?','туалет нэрэдэ?','Где туалет?'],
+    ['Döviz bürosu nerede?','дёвиз бюросу нэрэдэ?','Где обмен валюты?']
+  ]],
+  ['Здоровье и помощь',[
+    ['Yardım edin!','ярдым эдин!','Помогите!'],['Eczane nerede?','эджзанэ нэрэдэ?','Где аптека?'],['Doktor lazım','доктор лязым','Нужен врач'],
+    ['Başım ağrıyor','башым аърыйор','Болит голова'],['Alerjim var','алержим вар','У меня аллергия'],['Rusça bilen var mı?','русча билен вар мы?','Кто-нибудь говорит по-русски?']
+  ]]
+];
+const FOOD=[
+  ['07:00','10:00','Завтрак','Main Restaurant','Шведский стол, свежевыжатый апельсиновый сок, детокс-вода'],
+  ['10:00','10:30','Поздний завтрак','Main Restaurant',''],
+  ['10:30','18:30','Кондитерская','Fine & Delicious Bakery','Десерты, круассаны, торты, кофе'],
+  ['11:30','15:30','Фреш-бар','Amfi Bar','Апельсиновый, морковный, гранатовый сок'],
+  ['12:00','15:30','Вафли, мороженое, гёзлеме','У бассейна и детского бара',''],
+  ['12:00','16:00','Снеки и уличная еда','Food Court у бассейна',''],
+  ['12:30','14:30','Обед','Main Restaurant','Шведский стол'],
+  ['16:00','18:00','Поздний обед, фастфуд','Food Court',''],
+  ['18:30','21:00','Ужин','Main Restaurant','Шведский стол'],
+  ['19:00','21:00','Ужин а-ля карт','Sailor Fish, Turca, Cactus','Только по брони'],
+  ['21:00','02:00','Ночной буфет','Main Restaurant',''],
+  ['02:00','07:00','Ночной завтрак','Main Restaurant','Континентальный']
+];
+const NUMS=[['1','bir'],['2','iki'],['3','üç'],['4','dört'],['5','beş'],['6','altı'],['7','yedi'],['8','sekiz'],['9','dokuz'],['10','on'],['20','yirmi'],['50','elli'],['100','yüz'],['500','beş yüz'],['1000','bin']];
+
+/* ---------- helpers ---------- */
+function trNow(){return new Date(Date.now()+OFF)}
+function todayKey(){return trNow().toISOString().slice(0,10)}
+function nowHM(){return trNow().toISOString().slice(11,16)}
+function pl(n,a,b,c){const m10=n%10,m100=n%100;if(m10===1&&m100!==11)return a;if(m10>=2&&m10<=4&&(m100<12||m100>14))return b;return c}
+function num(v){if(typeof v==='number')return isFinite(v)?v:0;const n=parseFloat(String(v==null?'':v).replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:0}
+const nf0=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
+const nf2=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2});
+function money(v,cur){const n=(Math.abs(v)<100&&cur!=='RUB')?nf2.format(v):nf0.format(v);return cur==='USD'?'$'+n:n+' '+SYM[cur]}
+function R(){const s=S.settings||{};return{USD:1,TRY:num(s.usdTry)||DEF_RATES.usdTry,RUB:num(s.usdRub)||DEF_RATES.usdRub,EUR:1/(num(s.eurUsd)||DEF_RATES.eurUsd)}}
+function conv(a,from,to){const r=R();return a/r[from]*r[to]}
+let uidN=0;
+function uid(){return Date.now().toString(36)+(uidN++).toString(36)+Math.random().toString(36).slice(2,6)}
+function clone(o){return JSON.parse(JSON.stringify(o||{}))}
+function merge(a,b){const o=Object.assign({},a||{});for(const k in b){const v=b[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k]))o[k]=merge(o[k],v);else o[k]=v}return o}
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const X_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+const PLANE='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>';
+
+/* ---------- состояние и хранилище ---------- */
+const K_CACHE='belek26:cache',K_LOCAL='belek26:local',K_PREFS='belek26:prefs';
+const DOCS=['plan','packing','settings','notes'];
+const S={plan:{},packing:{},settings:{},notes:{},expenses:{}};
+let mode='loading', db=null, canWrite=true, offline=false;
+const loaded={}, exists={}, pend={}, pendT={}, queues={};
+/* Офлайн-версия для телефона: план и шпаргалка встроены в страницу (#base), а галочки, траты и контакты
+   хранятся в этом телефоне как поправки поверх встроенных данных (K_OV) */
+const BASE=(()=>{const el=document.getElementById('base');try{return el?JSON.parse(el.textContent):null}catch(e){return null}})();
+const K_OV='belek26:ov';
+let OV={};
+function rebuild(){DOCS.forEach(k=>{S[k]=merge(clone(BASE[k]),OV[k]||{})});S.expenses=Object.assign({},OV.expenses||{})}
+function goStandalone(){mode='local';OV=lsGet(K_OV)||{};rebuild();renderAll()}
+const prefs=Object.assign({tab:'home',day:null,list:'pack',hideDone:false},lsGet(K_PREFS)||{});
+function savePrefs(){lsSet(K_PREFS,prefs)}
+function assign(o){if(!o)return;for(const k of [...DOCS,'expenses'])if(o[k]&&typeof o[k]==='object')S[k]=o[k]}
+function persist(){if(BASE){OV.expenses=S.expenses;lsSet(K_OV,OV);return}const o={};for(const k of [...DOCS,'expenses'])o[k]=S[k];lsSet(mode==='local'?K_LOCAL:K_CACHE,o)}
+
+async function connect(){
+  if(BASE){goStandalone();return}
+  let d=null;
+  try{d=(window.claude&&typeof window.claude.use==='function')?await window.claude.use('db'):null}catch(e){d=null}
+  if(!d){goLocal();return}
+  db=d;
+  try{const u=await window.claude.use('user');if(u){const c=await u.can('data.write');if(c===false)canWrite=false}}catch(e){}
+  DOCS.forEach(name=>{
+    db.doc(name+'/main').onSnapshot(snap=>{
+      exists[name]=!!snap.exists;
+      let d2=snap.exists?clone(snap.data()):{};
+      if(pend[name])d2=merge(d2,pend[name]);
+      S[name]=d2;loaded[name]=true;onSnap(snap.metadata);
+    },onSubErr);
+  });
+  db.collection('expenses').onSnapshot(snap=>{
+    const m={};snap.docs.forEach(doc=>{if(doc.exists){const v=doc.data();if(v)m[doc.id]=clone(v)}});
+    S.expenses=m;loaded.expenses=true;onSnap(snap.metadata);
+  },onSubErr);
+}
+function goLocal(){mode='local';assign(lsGet(K_LOCAL));renderAll()}
+function onSnap(meta){
+  if([...DOCS,'expenses'].every(k=>loaded[k])){mode='shared';offline=!!(meta&&meta.fromCache);persist()}
+  scheduleRender();
+}
+function onSubErr(e){
+  if(mode!=='shared'){goLocal();toast('Общий доступ сейчас недоступен. Изменения сохранятся только на этом устройстве');return}
+  offline=true;if(e&&e.code==='revoked')canWrite=false;scheduleRender();
+}
+async function withRetry(fn){try{return await fn()}catch(e){if(e&&e.code==='unavailable'){await new Promise(r=>setTimeout(r,700+Math.random()*900));return await fn()}throw e}}
+function q(path,fn){const p=(queues[path]||Promise.resolve()).then(()=>withRetry(fn)).catch(onWriteErr);queues[path]=p;return p}
+function onWriteErr(e){
+  const c=e&&e.code;
+  if(c==='invalid_argument'){canWrite=false;scheduleRender();toast('Не сохранилось: у этого аккаунта доступ только на просмотр. Владелец может дать доступ «Редактор»')}
+  else if(c==='quota_exceeded')toast('Хранилище заполнено. Удалите старые траты или пункты');
+  else toast('Не сохранилось. Проверьте интернет и повторите');
+}
+function guard(){
+  if(!canWrite){toast('У вас доступ только на просмотр');return false}
+  if(mode==='loading'){toast('Подождите пару секунд, данные загружаются');return false}
+  return true;
+}
+function commit(name,patch){
+  if(mode==='local'){if(BASE)OV[name]=merge(OV[name]||{},patch);persist();return}
+  const path=name+'/main';
+  q(path,async()=>{
+    const ref=db.doc(path);
+    if(exists[name])await ref.update(patch);
+    else{await ref.set(clone(S[name]));exists[name]=true}
+  });
+}
+function patchItem(name,id,patch){
+  if(!guard())return;
+  const p={items:{[id]:patch}};
+  S[name]=merge(S[name],p);commit(name,p);scheduleRender();
+}
+function setField(name,patch,now){
+  if(!guard())return;
+  S[name]=merge(S[name],patch);
+  if(mode==='local'){if(BASE)OV[name]=merge(OV[name]||{},patch);persist();scheduleRender();return}
+  pend[name]=merge(pend[name]||{},patch);
+  clearTimeout(pendT[name]);
+  const flush=()=>{const p=pend[name];pend[name]=null;if(p)commit(name,p)};
+  if(now)flush();else pendT[name]=setTimeout(flush,700);
+  scheduleRender();
+}
+function items(name){const it=(S[name]&&S[name].items)||{};return Object.keys(it).filter(id=>it[id]&&!it[id].deleted).map(id=>Object.assign({id},it[id]))}
+function loadTemplate(name){
+  if(!guard())return;
+  const add={};let o=0;
+  if(name==='plan')TPL.plan.forEach(([day,time,title,note])=>{add[uid()]={day,time,title,note,done:false,o:o++}});
+  else TPL.packing.forEach(([list,cat,text,hint])=>{if(list===prefs.list)add[uid()]={list,cat,text,hint,done:false,o:o++}});
+  const p={items:add};S[name]=merge(S[name],p);commit(name,p);scheduleRender();
+  toast('Готово, список добавлен');
+}
+function addExpense(data){
+  if(!guard())return;const id=uid();
+  S.expenses=Object.assign({},S.expenses,{[id]:data});
+  if(mode==='local')persist();else q('expenses/'+id,()=>db.collection('expenses').doc(id).set(data));
+  scheduleRender();
+}
+function delExpense(id){
+  if(!guard())return;const cur=S.expenses[id];if(!cur)return;
+  const c=Object.assign({},S.expenses);delete c[id];S.expenses=c;
+  if(mode==='local')persist();else q('expenses/'+id,()=>db.collection('expenses').doc(id).delete());
+  scheduleRender();
+  toast('Трата удалена','Вернуть',()=>{if(!guard())return;S.expenses=Object.assign({},S.expenses,{[id]:cur});if(mode==='local')persist();else q('expenses/'+id,()=>db.collection('expenses').doc(id).set(cur));scheduleRender()});
+}
+function delItem(name,id){
+  patchItem(name,id,{deleted:true});
+  toast('Удалено','Вернуть',()=>patchItem(name,id,{deleted:false}));
+}
+
+/* ---------- отрисовка ---------- */
+let rq=0;
+function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;renderAll()})}
+function renderAll(){
+  document.body.classList.toggle('ro',!canWrite);
+  renderPill();renderHome();renderPlan();renderPack();renderMoney();bindInputs();
+}
+function renderPill(){
+  const p=$('#sync');let cls='',t='';
+  if(mode==='loading'){t='Подключаюсь…'}
+  else if(BASE){t='Работает без интернета';cls='ok'}
+  else if(mode==='local'){t='Только на этом устройстве';cls='warn'}
+  else if(!canWrite){t='Только просмотр'}
+  else if(offline){t='Нет связи';cls='warn'}
+  else{t='Общий доступ';cls='ok'}
+  p.className='pill '+cls;p.innerHTML='<i></i>'+esc(t);
+  p.title=BASE?'План и шпаргалка сохранены в телефоне. Галочки и траты хранятся только на этом телефоне':mode==='local'?'Отметки хранятся в этом браузере и не видны второму человеку':'Отметки, план и траты видны всем, у кого есть доступ к странице';
+}
+function passHTML(o){
+  return `<div class="pass-main"><div class="pass-head"><span>${o.label}</span><span>${o.date}</span></div>
+  <div class="route"><div><div class="iata">${o.from}</div><div class="city">${o.fromCity} · <span class="mono">${o.fromTime}</span></div></div>
+  <div class="route-line" aria-hidden="true">${PLANE}</div>
+  <div class="r"><div class="iata">${o.to}</div><div class="city">${o.toCity} · <span class="mono">${o.toTime}</span></div></div></div></div>
+  <div class="tear" aria-hidden="true"></div><div class="pass-stub">${o.stub}</div>`;
+}
+function countHTML(label,ms){
+  const m=Math.max(0,Math.floor(ms/60000)),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;
+  return `<div class="stub-label">${label}</div><div class="count"><div><b>${d}</b><span>${pl(d,'день','дня','дней')}</span></div><div><b>${String(h).padStart(2,'0')}</b><span>${pl(h,'час','часа','часов')}</span></div><div><b>${String(mi).padStart(2,'0')}</b><span>${pl(mi,'минута','минуты','минут')}</span></div></div>`;
+}
+function totalUSD(){let t=0;for(const id in S.expenses){const e=S.expenses[id];if(e&&SYM[e.cur])t+=conv(num(e.amount),e.cur,'USD')}return t}
+function renderHome(){
+  const now=Date.now();
+  const out={label:'Рейс туда · 2S-024',date:'17 окт · сб',from:'KZN',fromCity:'Казань',fromTime:'02:00',to:'AYT',toCity:'Анталья',toTime:'06:00'};
+  const back={label:'Рейс обратно · 2S-023',date:'23 окт · пт',from:'AYT',fromCity:'Анталья',fromTime:'20:00',to:'KZN',toCity:'Казань',toTime:'≈00:00'};
+  let html;
+  if(now<T_DEP){html=passHTML(Object.assign(out,{stub:countHTML('До вылета',T_DEP-now)}))}
+  else if(now<T_ARR){html=passHTML(Object.assign(out,{label:'Вы в полёте',stub:'<div class="stub-big">Посадка в Анталье в 06:00</div><div class="stub-note">Разницы во времени нет. После багажа ищите стойку PEGAS Touristik</div>'}))}
+  else if(now<T_RET){
+    const idx=DAYS.findIndex(D=>D.k===todayKey());const n=Math.max(1,Math.min(7,idx));
+    const left=T_RET-now,dl=Math.floor(left/864e5),hl=Math.floor(left%864e5/36e5);
+    html=passHTML(Object.assign(back,{stub:`<div class="stub-label">Богазкент · Kirman Belazur</div><div class="stub-big">День ${n} из 7</div><div class="stub-note">До обратного рейса ${dl} ${pl(dl,'день','дня','дней')} ${hl} ${pl(hl,'час','часа','часов')}</div>`}))
+  }
+  else if(now<T_HOME){html=passHTML(Object.assign(back,{label:'Летим домой',stub:'<div class="stub-big">Прилёт в Казань около полуночи</div>'}))}
+  else{html=passHTML(Object.assign(back,{label:'Поездка завершена',stub:`<div class="stub-big">С возвращением!</div><div class="stub-note">Всего потрачено ${money(totalUSD(),'USD')}</div>`}))}
+  $('#pass').innerHTML=html;
+  renderNow();
+
+  const pk=items('packing').filter(i=>i.list==='pack');const done=pk.filter(i=>i.done).length;
+  const pct=pk.length?Math.round(done/pk.length*100):0;
+  const spent=totalUSD(),bud=num(S.settings&&S.settings.budgetUsd);
+  $('#tiles').innerHTML=
+    `<button class="tile" type="button" data-tab="pack"><small>Сборы</small><b>${done} из ${pk.length}</b><div class="bar"><i style="width:${pct}%"></i></div></button>`+
+    `<button class="tile" type="button" data-tab="money"><small>Потрачено</small><b>${money(spent,'USD')}</b><span>${bud?'из $'+nf0.format(bud):'бюджет не задан'}</span></button>`+
+    `<button class="tile" type="button" data-tab="money"><small>Курс</small><b>${nf2.format(R().TRY)} ₺</b><span>за 1 $</span></button>`;
+
+  const key=todayKey()+' '+nowHM();
+  const up=items('plan').filter(i=>!i.done&&(i.day+' '+(i.time||'23:59'))>=key).sort((a,b)=>(a.day+(a.time||'99')).localeCompare(b.day+(b.time||'99'))).slice(0,4);
+  const dayOf=k=>{const D=DAYS.find(x=>x.k===k);return D?D.wd+' '+D.d:k};
+  $('#next').innerHTML=up.length?up.map(i=>`<div class="item"><div class="when">${esc(i.day===todayKey()?'сегодня':dayOf(i.day))}<br>${esc(i.time||'')}</div><div><div class="ttl">${esc(i.title)}</div>${i.note?`<div class="note">${esc(i.note)}</div>`:''}${moreBtn(i)}</div>${moreBody(i)}</div>`).join('')
+    :`<div class="empty">${items('plan').length?'Все дела на ближайшее время выполнены.':'План пока пуст.'}<button class="btn soft sm" type="button" data-tab="plan">Открыть план</button></div>`;
+}
+function curDay(){
+  if(prefs.day&&DAYS.some(D=>D.k===prefs.day))return prefs.day;
+  const t=todayKey();if(DAYS.some(D=>D.k===t))return t;
+  return Date.now()>T_RET?DAYS[DAYS.length-1].k:DAYS[0].k;
+}
+/* пояснение к событию: item.more = {t, steps, pl:[{n,a,h,tel,q}], tel:[[подпись,номер]], wa:[[подпись,номер]], say:[[tr,pron,ru]], link:[[подпись,url]]} */
+const openMore=new Set();
+const telHref=n=>'tel:'+String(n).replace(/[^\d+]/g,'');
+const mapHref=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+function moreBtn(i){
+  if(!i.more||typeof i.more!=='object')return '';
+  const o=openMore.has(i.id);
+  return `<button class="more-btn" type="button" data-act="more" data-id="${esc(i.id)}" aria-expanded="${o}">${o?'Свернуть':'Подробнее'}</button>`;
+}
+function moreBody(i){
+  const m=i.more;if(!m||typeof m!=='object')return '';
+  const arr=v=>Array.isArray(v)?v:[];
+  let h='';
+  if(m.t)h+=String(m.t).split(/\n\s*\n/).map(p=>`<p>${esc(p.trim()).replace(/\n/g,'<br>')}</p>`).join('');
+  if(arr(m.steps).length)h+=`<ol>${m.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`;
+  if(arr(m.pl).length)h+=`<div><div class="mh">Где</div>${m.pl.map(p=>`<div class="place"><b>${esc(p.n)}</b>${p.a?`<span>${esc(p.a)}</span>`:''}${p.h?`<span class="small muted">${esc(p.h)}</span>`:''}<div class="acts">${p.q?`<a class="btn line sm" href="${esc(mapHref(p.q))}" target="_blank" rel="noopener">На карте</a>`:''}${p.a?`<button class="btn line sm" type="button" data-copy="${esc(p.a)}">Копировать адрес</button>`:''}${p.tel?`<a class="btn soft sm" href="${esc(telHref(p.tel))}">${esc(p.tel)}</a>`:''}</div></div>`).join('')}</div>`;
+  if(arr(m.tel).length||arr(m.wa).length)h+=`<div><div class="mh">Позвонить</div><div class="acts">${arr(m.tel).map(([l,n])=>`<a class="btn soft sm" href="${esc(telHref(n))}">${esc(l)} · ${esc(n)}</a>`).join('')}${arr(m.wa).map(([l,n])=>`<a class="btn soft sm" href="https://wa.me/${esc(String(n).replace(/\D/g,''))}" target="_blank" rel="noopener">${esc(l)}</a>`).join('')}</div></div>`;
+  if(arr(m.say).length)h+=`<div><div class="mh">Что сказать · нажмите, чтобы показать крупно</div>${m.say.map(([tr,pr,ru])=>`<button class="phrase" type="button" data-act="phrase" data-tr="${esc(tr)}" data-pr="${esc(pr)}" data-ru="${esc(ru)}"><span class="tr">${esc(tr)}</span><span class="pron">${esc(pr)}</span><span class="ru">${esc(ru)}</span></button>`).join('')}</div>`;
+  if(arr(m.link).length)h+=`<div class="acts">${m.link.map(([l,u])=>/^https:\/\//.test(u)?`<a class="btn line sm" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)}</a>`:'').join('')}</div>`;
+  return h?`<div class="more-body" data-more="${esc(i.id)}"${openMore.has(i.id)?'':' hidden'}>${h}</div>`:'';
+}
+function toggleMore(id){
+  const o=!openMore.has(id);if(o)openMore.add(id);else openMore.delete(id);
+  $$('.more-body').forEach(b=>{if(b.dataset.more===id)b.hidden=!o});
+  $$('.more-btn').forEach(b=>{if(b.dataset.id===id){b.setAttribute('aria-expanded',String(o));b.textContent=o?'Свернуть':'Подробнее'}});
+}
+function byTime(a,b){return (a.time||'99:99').localeCompare(b.time||'99:99')||(num(a.o)-num(b.o))}
+function renderPlan(){
+  const all=items('plan'),today=todayKey(),sel=curDay();
+  $('#day-chips').innerHTML=DAYS.map(D=>{const n=all.filter(i=>i.day===D.k).length;return `<button type="button" class="chip${D.k===today?' today':''}" data-act="day" data-day="${D.k}" aria-pressed="${D.k===sel}"><small>${D.wd}</small><b>${D.d}</b><small>${n?n+' '+pl(n,'дело','дела','дел'):'пусто'}</small></button>`}).join('');
+  const D=DAYS.find(x=>x.k===sel);
+  $('#day-head').innerHTML=`<h2 class="day-title">${D.wf}, ${D.d} октября</h2><div class="day-tag">${esc(D.tag)}${D.k===today?' · сегодня':''}</div>${D.facts.length?`<ul class="facts">${D.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}`;
+  const list=all.filter(i=>i.day===sel).sort(byTime);
+  if(!all.length){$('#day-list').innerHTML=`<div class="empty">План пока пуст. Можно загрузить готовый план на 16–23 октября и поправить под себя.<button class="btn needs-write" type="button" data-act="tpl" data-name="plan">Загрузить готовый план</button></div>`;return}
+  $('#day-list').innerHTML=list.length?list.map(i=>`<div class="item${i.done?' done':''}"><input class="cb" type="checkbox" aria-label="Сделано" data-act="toggle" data-name="plan" data-id="${esc(i.id)}"${i.done?' checked':''}${canWrite?'':' disabled'}><div class="t">${esc(i.time||'—')}</div><div><div class="ttl">${esc(i.title)}</div>${i.note?`<div class="note">${esc(i.note)}</div>`:''}${moreBtn(i)}</div><button class="x needs-write" type="button" aria-label="Удалить" data-act="del" data-name="plan" data-id="${esc(i.id)}">${X_ICON}</button>${moreBody(i)}</div>`).join('')
+    :'<div class="empty">На этот день пока ничего нет. Добавьте дело ниже.</div>';
+}
+function renderPack(){
+  const list=prefs.list==='shop'?'shop':'pack',cats=list==='shop'?CAT_SHOP:CAT_PACK;
+  $$('#pack-seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===list)));
+  $('#hide-done').checked=!!prefs.hideDone;
+  const all=items('packing').filter(i=>i.list===list),done=all.filter(i=>i.done).length,pct=all.length?Math.round(done/all.length*100):0;
+  $('#pack-progress').innerHTML=list==='pack'
+    ?`<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span class="eyebrow">Собрано</span><b>${done} из ${all.length}</b></div><div class="bar"><i style="width:${pct}%"></i></div><span class="small muted">${all.length&&done===all.length?'Всё собрано, можно ехать':(BASE?'Галочки хранятся в этом телефоне':'Отмечайте вдвоём: галочки видны обоим')}</span>`
+    :`<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span class="eyebrow">Куплено</span><b>${done} из ${all.length}</b></div><div class="bar"><i style="width:${pct}%"></i></div><span class="small muted">Идеи, что привезти. Добавляйте своё</span>`;
+  const sel=$('#kf-cat');if(sel.dataset.list!==list){sel.innerHTML=Object.keys(cats).map(k=>`<option value="${k}">${esc(cats[k])}</option>`).join('');sel.dataset.list=list}
+  if(!all.length){$('#pack-list').innerHTML=`<div class="empty">Список пуст.<button class="btn needs-write" type="button" data-act="tpl" data-name="packing">${list==='pack'?'Загрузить готовый список вещей':'Загрузить идеи покупок'}</button></div>`;return}
+  let html='';
+  Object.keys(cats).concat(Object.keys(all.reduce((m,i)=>{if(!cats[i.cat])m[i.cat]=1;return m},{}))).forEach(cat=>{
+    let rows=all.filter(i=>i.cat===cat);if(!rows.length)return;
+    const dn=rows.filter(i=>i.done).length,tot=rows.length;
+    if(prefs.hideDone)rows=rows.filter(i=>!i.done);
+    if(!rows.length)return;
+    html+=`<div class="grp">${esc(cats[cat]||'Другое')} · ${dn}/${tot}</div>`;
+    rows.sort((a,b)=>num(a.o)-num(b.o)).forEach(i=>{html+=`<div class="item nt${i.done?' done':''}"><input class="cb" type="checkbox" aria-label="Готово" data-act="toggle" data-name="packing" data-id="${esc(i.id)}"${i.done?' checked':''}${canWrite?'':' disabled'}><div><div class="ttl">${esc(i.text)}</div>${i.hint?`<div class="note">${esc(i.hint)}</div>`:''}</div><button class="x needs-write" type="button" aria-label="Удалить" data-act="del" data-name="packing" data-id="${esc(i.id)}">${X_ICON}</button></div>`});
+  });
+  $('#pack-list').innerHTML=html||'<div class="empty">Всё отмечено. Снимите «Скрыть отмеченное», чтобы увидеть список.</div>';
+}
+function renderMoney(){
+  const spent=totalUSD(),bud=num(S.settings&&S.settings.budgetUsd),r=R();
+  const pct=bud?Math.min(100,Math.round(spent/bud*100)):0;
+  $('#budget-dyn').innerHTML=`<h2 class="eyebrow">Потрачено за поездку</h2><div class="big" style="margin-top:6px">${money(spent,'USD')}</div>
+    <div class="kv3"><span>${money(spent*r.TRY,'TRY')}</span><span>${money(spent*r.RUB,'RUB')}</span></div>
+    ${bud?`<div class="bar${spent>bud?' over':''}" style="margin-top:10px"><i style="width:${pct}%"></i></div><div class="small ${spent>bud?'':'muted'}" style="margin-top:6px;${spent>bud?'color:var(--pom)':''}">${spent>bud?'Бюджет превышен на '+money(spent-bud,'USD'):'Осталось '+money(bud-spent,'USD')+' из $'+nf0.format(bud)}</div>`:''}`;
+  // конвертер
+  const a=num($('#cv-amt').value),c=$('#cv-cur').value;
+  $('#cv-out').innerHTML=['TRY','USD','EUR','RUB'].filter(x=>x!==c).map(x=>`<div><b>${money(conv(a,c,x),x)}</b><span>${CUR_NAME[x]}</span></div>`).join('');
+  const rd=(S.settings&&S.settings.ratesDate)||DEF_RATES.date;
+  $('#rates-date').textContent=`Курс от ${rd}. В обменнике он немного другой: впишите курс, по которому поменяли, и все суммы пересчитаются.`;
+  // категории
+  const ex=Object.keys(S.expenses).map(id=>Object.assign({id},S.expenses[id])).filter(e=>SYM[e.cur]);
+  const byCat={};ex.forEach(e=>{byCat[e.cat]=(byCat[e.cat]||0)+conv(num(e.amount),e.cur,'USD')});
+  const cats=Object.keys(byCat).sort((x,y)=>byCat[y]-byCat[x]);const mx=cats.length?byCat[cats[0]]:0;
+  $('#cats-card').innerHTML=`<h2 class="eyebrow">По категориям</h2>`+(cats.length?`<div class="catbars">${cats.map(k=>`<div class="catbar"><span>${esc(CAT_EXP[k]||'Другое')}</span><span class="mono">${money(byCat[k],'USD')}</span><div class="bar"><i style="width:${mx?Math.max(3,Math.round(byCat[k]/mx*100)):0}%"></i></div></div>`).join('')}</div>`:'<p class="muted small">Здесь появится разбивка, когда запишете первые траты.</p>');
+  // список
+  ex.sort((x,y)=>(y.day||'').localeCompare(x.day||'')||num(y.ts)-num(x.ts));
+  if(!ex.length){$('#exp-list').innerHTML='<div class="empty">Пока трат нет. Запишите первую: сумма, валюта, категория. Итог сразу пересчитается в доллары, лиры и рубли.</div>';return}
+  let html='',last='';
+  ex.forEach(e=>{
+    if(e.day!==last){last=e.day;const D=DAYS.find(x=>x.k===e.day);const dsum=ex.filter(z=>z.day===e.day).reduce((s,z)=>s+conv(num(z.amount),z.cur,'USD'),0);html+=`<div class="grp">${D?D.wd+', '+D.d+' октября':'Без даты'} · ${money(dsum,'USD')}</div>`}
+    html+=`<div class="item nt"><div><span class="tag">${esc(CAT_EXP[e.cat]||'Другое')}</span></div><div class="ttl" style="font-weight:500">${esc(e.note||'Без описания')}</div><div style="display:flex;gap:6px;align-items:flex-start"><div class="amt">${money(num(e.amount),e.cur)}${e.cur!=='USD'?`<small>≈ ${money(conv(num(e.amount),e.cur,'USD'),'USD')}</small>`:''}</div><button class="x needs-write" type="button" aria-label="Удалить трату" data-act="delexp" data-id="${esc(e.id)}">${X_ICON}</button></div></div>`;
+  });
+  $('#exp-list').innerHTML=html;
+}
+function bindInputs(){
+  $$('[data-bind]').forEach(el=>{
+    if(document.activeElement===el)return;
+    const [n,f]=el.dataset.bind.split('.');let v=S[n]&&S[n][f];
+    if((v==null||v==='')&&n==='settings'&&f==='usdTry')v=DEF_RATES.usdTry;
+    if((v==null||v==='')&&n==='settings'&&f==='usdRub')v=DEF_RATES.usdRub;
+    if((v==null||v==='')&&n==='settings'&&f==='eurUsd')v=DEF_RATES.eurUsd;
+    const s=v==null?'':String(v);if(el.value!==s)el.value=s;
+    el.disabled=!canWrite;
+  });
+}
+function renderPhrases(){
+  $('#phrases').innerHTML=PHRASES.map(([g,list])=>`<div><h3 style="margin-bottom:4px">${esc(g)}</h3>${list.map(([tr,pr,ru])=>`<button class="phrase" type="button" data-act="phrase" data-tr="${esc(tr)}" data-pr="${esc(pr)}" data-ru="${esc(ru)}"><span class="tr">${esc(tr)}</span><span class="pron">${esc(pr)}</span><span class="ru">${esc(ru)}</span></button>`).join('')}</div>`).join('')+
+  `<div><h3 style="margin-bottom:8px">Числа</h3><div class="nums">${NUMS.map(([n,t])=>`<div><b>${n}</b>${esc(t)}</div>`).join('')}</div></div>`;
+}
+function renderConcept(){
+  $('#food-sched').innerHTML=FOOD.map(([s,e,t,w,n])=>`<div class="s-t">${s}–${e}</div><div><b>${esc(t)}</b> · ${esc(w)}${n?`<div class="small muted">${esc(n)}</div>`:''}</div>`).join('');
+}
+function isOpen(s,e,hm){return s<e?(hm>=s&&hm<e):(hm>=s||hm<e)}
+function renderNow(){
+  const now=Date.now(),stay=now>=T_ARR&&now<T_RET;
+  $('#now-card').hidden=!stay;if(!stay)return;
+  const hm=nowHM();
+  const lines=FOOD.filter(f=>isOpen(f[0],f[1],hm)).map(f=>`<li><div><b>${esc(f[2])}</b> · ${esc(f[3])}</div><span>до ${f[1]}</span></li>`);
+  lines.push('<li><div><b>Clark Gable Bar</b> · напитки</div><span>24 часа</span></li>');
+  if(isOpen('23:00','02:00',hm))lines.push('<li><div><b>Disco Bar</b>, если сегодня работает</div><span>до 02:00</span></li>');
+  const later=FOOD.filter(f=>f[0]>hm).sort((a,b)=>a[0].localeCompare(b[0]));
+  const nx=later[0]||FOOD.slice().sort((a,b)=>a[0].localeCompare(b[0]))[0];
+  $('#now-open').innerHTML=`<ul class="now-list">${lines.join('')}</ul><p class="small muted" style="margin-top:10px">Дальше: ${esc(nx[2].toLowerCase())} в ${nx[0]}, ${esc(nx[3])}</p>`;
+}
+function fillSelects(){
+  $('#ef-cat').innerHTML=Object.keys(CAT_EXP).map(k=>`<option value="${k}">${esc(CAT_EXP[k])}</option>`).join('');
+  $('#ef-day').innerHTML=DAYS.map(D=>`<option value="${D.k}">${D.wd}, ${D.d} окт</option>`).join('');
+  const t=todayKey();$('#ef-day').value=DAYS.some(D=>D.k===t)?t:(Date.now()>T_RET?'2026-10-23':'2026-10-17');
+}
+
+/* ---------- вкладки ---------- */
+const TABS=['home','plan','pack','money','info'];
+function showTab(t,fromHash){
+  if(!TABS.includes(t))t='home';
+  prefs.tab=t;savePrefs();
+  TABS.forEach(x=>{$('#v-'+x).hidden=x!==t});
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
+  if(!fromHash){try{history.replaceState(null,'','#'+t)}catch(e){}}
+  window.scrollTo(0,0);
+}
+
+/* ---------- копирование, тост, фраза ---------- */
+let toastT=0;
+function toast(msg,label,fn){
+  const t=$('#toast');t.innerHTML=`<span>${esc(msg)}</span>${label?`<button type="button">${esc(label)}</button>`:''}`;t.hidden=false;
+  if(label)t.querySelector('button').onclick=()=>{t.hidden=true;fn()};
+  clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},label?6500:3500);
+}
+function copyText(text){
+  const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?'Скопировано':'Не получилось скопировать, выделите текст вручную')};
+  try{navigator.clipboard.writeText(text).then(()=>toast('Скопировано'),fallback)}catch(e){fallback()}
+}
+
+/* ---------- события ---------- */
+document.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-tab]');if(tb){showTab(tb.dataset.tab);return}
+  const cp=e.target.closest('[data-copy]');if(cp){copyText(cp.dataset.copy);return}
+  const cf=e.target.closest('[data-copy-from]');if(cf){copyText($('#'+cf.dataset.copyFrom).value);return}
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const a=el.dataset.act;
+  if(a==='day'){prefs.day=el.dataset.day;savePrefs();renderPlan()}
+  else if(a==='del'){delItem(el.dataset.name,el.dataset.id)}
+  else if(a==='delexp'){delExpense(el.dataset.id)}
+  else if(a==='tpl'){loadTemplate(el.dataset.name)}
+  else if(a==='packlist'){prefs.list=el.dataset.v;savePrefs();renderPack()}
+  else if(a==='cv'){$('#cv-amt').value=el.dataset.a;$('#cv-cur').value=el.dataset.c;renderMoney()}
+  else if(a==='open'){showTab('info');const f=$('#'+el.dataset.sec);if(f){f.open=true;setTimeout(()=>f.scrollIntoView({block:'start'}),30)}}
+  else if(a==='more'){toggleMore(el.dataset.id)}
+  else if(a==='phrase'){$('#o-tr').textContent=el.dataset.tr;$('#o-pron').textContent=el.dataset.pr;$('#o-ru').textContent=el.dataset.ru;$('#overlay').hidden=false}
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.matches('[data-act="toggle"]')){
+    const it=(S[el.dataset.name].items||{})[el.dataset.id];
+    if(!canWrite||mode==='loading'){el.checked=!!(it&&it.done);guard();return}
+    patchItem(el.dataset.name,el.dataset.id,{done:el.checked});
+  }
+  else if(el.id==='hide-done'){prefs.hideDone=el.checked;savePrefs();renderPack()}
+  else if(el.id==='cv-cur'){renderMoney()}
+  else if(el.dataset.bind){commitBind(el,true)}
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='cv-amt'){renderMoney();return}
+  if(el.dataset.bind)commitBind(el,false);
+});
+function commitBind(el,now){
+  const [n,f]=el.dataset.bind.split('.');
+  let v=el.value.trim();
+  if(n==='settings'){
+    const x=num(v);if(v!==''&&!(x>0))return;
+    const patch={[f]:v===''?null:x};
+    if(f==='usdTry'||f==='usdRub'||f==='eurUsd'){const d=trNow();patch.ratesDate=String(d.getUTCDate()).padStart(2,'0')+'.'+String(d.getUTCMonth()+1).padStart(2,'0')+'.'+d.getUTCFullYear()}
+    setField(n,patch,now);
+  }else setField(n,{[f]:v},now);
+}
+$('#overlay').addEventListener('click',()=>{$('#overlay').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#overlay').hidden=true});
+
+$('#plan-form').addEventListener('submit',e=>{
+  e.preventDefault();const title=$('#pf-title').value.trim();if(!title)return;
+  if(!guard())return;
+  patchItem('plan',uid(),{day:curDay(),time:$('#pf-time').value||'',title,note:$('#pf-note').value.trim(),done:false,o:Date.now()});
+  $('#pf-title').value='';$('#pf-note').value='';$('#pf-time').value='';$('#pf-title').focus();
+});
+$('#pack-form').addEventListener('submit',e=>{
+  e.preventDefault();const text=$('#kf-text').value.trim();if(!text)return;
+  if(!guard())return;
+  patchItem('packing',uid(),{list:prefs.list==='shop'?'shop':'pack',cat:$('#kf-cat').value,text,hint:'',done:false,o:Date.now()});
+  $('#kf-text').value='';$('#kf-text').focus();
+});
+$('#exp-form').addEventListener('submit',e=>{
+  e.preventDefault();const amount=num($('#ef-amt').value);
+  if(!(amount>0)){toast('Введите сумму больше нуля');return}
+  addExpense({amount,cur:$('#ef-cur').value,cat:$('#ef-cat').value,day:$('#ef-day').value,note:$('#ef-note').value.trim(),ts:Date.now()});
+  $('#ef-amt').value='';$('#ef-note').value='';
+});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(TABS.includes(h))showTab(h,true)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHome()});
+setInterval(()=>{if(!document.hidden)renderHome()},30000);
+
+/* ---------- старт ---------- */
+assign(lsGet(K_CACHE));
+fillSelects();renderPhrases();renderConcept();
+if(BASE)$('#notes-hint').textContent='Эти поля хранятся только в этом телефоне. Заполните на обоих телефонах.';
+const h=location.hash.slice(1);
+showTab(TABS.includes(h)?h:prefs.tab,TABS.includes(h));
+renderAll();
+connect();
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  const hadCtrl=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadCtrl&&!reloaded){reloaded=true;location.reload()}});
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+}
+</script>
+</body>
+</html>
